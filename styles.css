@@ -699,35 +699,20 @@ body::before {
   }
   .motion-particle { opacity: .35; }
 }
-.brand-logo {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  border-radius: 14px;
-  background: #f6a623;
-  padding: 6px;
-  box-shadow: 0 10px 25px rgba(246, 166, 35, 0.32);
-}
 .brand-logo-wide {
-  width: 245px;
+  width: 230px;
   height: auto;
-  max-height: 58px;
+  max-height: 52px;
   object-fit: contain;
   display: block;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
 }
 
 .navbar .brand {
-  min-width: 250px;
-  gap: 0;
-}
-
-@media (max-width: 760px) {
-  .brand-logo-wide {
-    width: 190px;
-    max-height: 48px;
-  }
-
-  .navbar .brand {
-    min-width: auto;
-  }
+  display: flex;
+  align-items: center;
+  min-width: 240px;
 }
