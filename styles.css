@@ -713,3 +713,11 @@ body::before {
   font-weight: 900;
   font-size: 1.12rem;
 }
+.brand img {
+  width: 42px !important;
+  height: 42px !important;
+  max-width: 42px !important;
+  max-height: 42px !important;
+  object-fit: contain;
+  display: block;
+}
