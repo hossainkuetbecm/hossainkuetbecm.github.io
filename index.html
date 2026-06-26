@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Hossain Ahmad - Civil Engineer portfolio website for RCC structural design support, AutoCAD drafting, BOQ, estimation and construction documentation." />
+  <title>Hossain Ahmad | Civil Engineer Portfolio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" id="siteHeader">
+    <div class="topbar">
+      <div class="container topbar-inner">
+        <span>📍 Cox’s Bazar, Bangladesh</span>
+        <span>✉️ hossain.kuet.becm@gmail.com</span>
+        <span>📞 +880 1330 220206</span>
+      </div>
+    </div>
+    <nav class="navbar container">
+      <a href="#home" class="brand">
+        <span class="brand-mark">HA</span>
+        <span class="brand-text">Hossain Ahmad</span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#resume">Resume</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li class="admin-nav-item"><a href="admin.html" class="admin-link">Admin</a></li>
+      </ul>
+      <a class="nav-cta" href="#contact">Get Quote</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="hero-section">
+      <div class="hero-bg hero-slide active" data-slide="0"></div>
+      <div class="hero-bg hero-slide" data-slide="1"></div>
+      <div class="hero-bg hero-slide" data-slide="2"></div>
+      <div class="container hero-grid">
+        <div class="hero-content reveal">
+          <span class="eyebrow">Civil Engineering • RCC Design • AutoCAD</span>
+          <h1>Professional Civil Engineering & Structural Drawing Support</h1>
+          <p>I prepare clean, accurate and construction-ready documents for RCC structural design support, AutoCAD drawings, BOQ, estimation, reports and project presentations.</p>
+          <div class="hero-actions">
+            <a href="#projects" class="btn btn-primary">View Projects</a>
+            <a href="assets/Hossain_Ahmad_CV.pdf" class="btn btn-light" download>Download CV</a>
+          </div>
+          <div class="hero-metrics">
+            <div><strong data-count="6">6</strong><span>Major work areas</span></div>
+            <div><strong data-count="10">10+</strong><span>Storied building work</span></div>
+            <div><strong data-count="37">37</strong><span>Traffic intersections TOR</span></div>
+          </div>
+        </div>
+        <aside class="quote-card reveal">
+          <h3>Start a Project</h3>
+          <p>Send your drawing, PDF, sketch or BOQ requirement.</p>
+          <form id="quickForm">
+            <input type="text" name="name" placeholder="Your name" required>
+            <input type="email" name="email" placeholder="Your email" required>
+            <select name="service" required>
+              <option value="">Choose service</option>
+              <option>AutoCAD Drafting</option>
+              <option>Structural Drawing Support</option>
+              <option>BOQ & Estimation</option>
+              <option>Technical Documentation</option>
+            </select>
+            <textarea name="message" rows="3" placeholder="Project details"></textarea>
+            <button type="submit" class="btn btn-primary full">Send Request</button>
+          </form>
+        </aside>
+      </div>
+      <button class="hero-arrow prev" id="prevSlide" aria-label="Previous slide">‹</button>
+      <button class="hero-arrow next" id="nextSlide" aria-label="Next slide">›</button>
+    </section>
+
+    <section class="trust-strip">
+      <div class="container strip-grid">
+        <span>AutoCAD</span>
+        <span>ETABS</span>
+        <span>STAAD Pro</span>
+        <span>MS Excel</span>
+        <span>BOQ</span>
+        <span>Technical Reports</span>
+      </div>
+    </section>
+
+    <section id="services" class="section services-section">
+      <div class="container">
+        <div class="section-heading reveal">
+          <span class="eyebrow dark">My Expertise</span>
+          <h2>Engineering Services</h2>
+          <p>Focused services for civil engineering drawing, structural documentation and project support.</p>
+        </div>
+        <div class="services-grid">
+          <article class="service-card reveal">
+            <div class="service-icon">🏗️</div>
+            <h3>RCC Structural Design Support</h3>
+            <p>Structural analysis and design support for residential, mixed-use and academic RCC building projects.</p>
+          </article>
+          <article class="service-card reveal">
+            <div class="service-icon">📐</div>
+            <h3>AutoCAD Structural Drawings</h3>
+            <p>Column layout, beam layout, slab reinforcement, foundation, pile cap, stair, reservoir and detail drawings.</p>
+          </article>
+          <article class="service-card reveal">
+            <div class="service-icon">📊</div>
+            <h3>BOQ & Quantity Estimation</h3>
+            <p>Item-wise measurement, unit rate calculation, cost summary and Excel-based construction documentation.</p>
+          </article>
+          <article class="service-card reveal">
+            <div class="service-icon">📄</div>
+            <h3>Reports & Documentation</h3>
+            <p>Inception report support, feasibility study documentation, TOR preparation and project formatting.</p>
+          </article>
+          <article class="service-card reveal">
+            <div class="service-icon">🏙️</div>
+            <h3>Township Presentation</h3>
+            <p>PowerPoint, cost component, land-use data, visual presentation and planning support for development projects.</p>
+          </article>
+          <article class="service-card reveal">
+            <div class="service-icon">💡</div>
+            <h3>Illumination & Load Calculation</h3>
+            <p>Room-wise illumination, circuit current, power calculation and load schedule documentation.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section about-section">
+      <div class="container about-grid">
+        <div class="about-image-wrap reveal">
+          <img src="assets/profile_photo.jpg" alt="Hossain Ahmad" class="about-image" />
+          <div class="experience-badge"><strong>4.9+</strong><span>Years Professional Experience</span></div>
+        </div>
+        <div class="about-content reveal">
+          <span class="eyebrow dark">About Me</span>
+          <h2>Building Engineer / Civil Engineer</h2>
+          <p>I am Hossain Ahmad, a civil engineer with a B.Sc. in Building Engineering & Construction Management from Khulna University of Engineering & Technology. My work focuses on structural drawing support, RCC building documentation, BOQ, estimation and technical reporting.</p>
+          <div class="about-list">
+            <div><strong>Education:</strong> B.Sc. in Building Engineering & Construction Management, KUET</div>
+            <div><strong>Experience:</strong> Assistant Engineer / Junior Designer, Mass Group</div>
+            <div><strong>Focus:</strong> RCC design support, AutoCAD drawings, BOQ, technical documentation</div>
+          </div>
+          <a href="#resume" class="btn btn-primary">View Resume</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section process-section">
+      <div class="container">
+        <div class="section-heading reveal">
+          <span class="eyebrow dark">Process</span>
+          <h2>How I Work With Clients</h2>
+          <p>Simple workflow for clean and professional project delivery.</p>
+        </div>
+        <div class="process-grid">
+          <div class="process-step reveal"><span>01</span><h3>Share Requirements</h3><p>Send PDF, DWG, sketch, reference files, deadline and output format.</p></div>
+          <div class="process-step reveal"><span>02</span><h3>Review Scope</h3><p>I review drawing scope, information gaps, file needs and delivery plan.</p></div>
+          <div class="process-step reveal"><span>03</span><h3>Prepare Work</h3><p>Drafting, calculation support, BOQ, report formatting or presentation work starts.</p></div>
+          <div class="process-step reveal"><span>04</span><h3>Deliver & Revise</h3><p>Final delivery in DWG, PDF, Excel, Word or PowerPoint with agreed revisions.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="section projects-section">
+      <div class="container">
+        <div class="portfolio-header reveal">
+          <div>
+            <span class="eyebrow dark">Recent Works</span>
+            <h2>Selected Project Experience</h2>
+          </div>
+          <div class="filter-controls" id="filterControls">
+            <button class="active" data-filter="all">All</button>
+            <button data-filter="structural">Structural</button>
+            <button data-filter="boq">BOQ</button>
+            <button data-filter="planning">Planning</button>
+            <button data-filter="technical">Technical</button>
+          </div>
+        </div>
+        <div class="project-grid" id="projectGrid"></div>
+      </div>
+    </section>
+
+    <section id="resume" class="section resume-section">
+      <div class="container resume-grid">
+        <div class="resume-card reveal">
+          <span class="eyebrow dark">Resume</span>
+          <h2>Professional Snapshot</h2>
+          <p>Creative and detail-oriented Civil / Building Engineer with experience in RCC structural analysis, structural design support, AutoCAD drafting, BOQ preparation, quantity estimation, construction documentation and project presentations.</p>
+          <a href="assets/Hossain_Ahmad_CV.pdf" class="btn btn-primary" download>Download Full CV</a>
+        </div>
+        <div class="timeline reveal">
+          <div class="timeline-item"><span>2021–2022</span><h3>Assistant Engineer / Junior Designer</h3><p>Mass Group, Chattogram — RCC structural design support, AutoCAD drawings, BOQ, documentation and presentations.</p></div>
+          <div class="timeline-item"><span>2016–2021</span><h3>B.Sc. in Building Engineering & Construction Management</h3><p>Khulna University of Engineering & Technology (KUET), CGPA 3.13 / 4.00.</p></div>
+          <div class="timeline-item"><span>Tools</span><h3>Software Skills</h3><p>AutoCAD, ETABS, STAAD Pro, MS Excel, MS Word, MS PowerPoint and project documentation tools.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section faq-section">
+      <div class="container faq-grid">
+        <div class="reveal">
+          <span class="eyebrow dark">FAQ</span>
+          <h2>Common Questions</h2>
+          <p>Quick answers before starting a project.</p>
+        </div>
+        <div class="faq-list reveal" id="faqList">
+          <div class="faq-item active"><button>What files do I need to start?</button><p>PDF, sketch, DWG, reference drawing, site information, required output format and deadline.</p></div>
+          <div class="faq-item"><button>What formats can you deliver?</button><p>DWG, PDF, Excel, Word and PowerPoint depending on the project requirement.</p></div>
+          <div class="faq-item"><button>Can you support revisions?</button><p>Yes. Revisions can be handled based on comments, drawing coordination and agreed scope.</p></div>
+          <div class="faq-item"><button>Do you work remotely?</button><p>Yes. I can support remote freelance, project-based and documentation work online.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section contact-section">
+      <div class="container contact-grid">
+        <div class="contact-info reveal">
+          <span class="eyebrow dark">Get In Touch</span>
+          <h2>Let’s Discuss Your Project</h2>
+          <p>Available for AutoCAD drafting, RCC drawing support, BOQ, estimation, report formatting and project presentation work.</p>
+          <div class="contact-cards">
+            <a href="mailto:hossain.kuet.becm@gmail.com">✉️ hossain.kuet.becm@gmail.com</a>
+            <a href="tel:+8801330220206">📞 +880 1330 220206</a>
+            <a href="https://www.linkedin.com/in/hossain1523/" target="_blank" rel="noopener">🔗 LinkedIn Profile</a>
+            <span>📍 Cox’s Bazar, Bangladesh</span>
+          </div>
+        </div>
+        <form class="contact-form reveal" id="contactForm">
+          <div class="two-col">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+          </div>
+          <input type="text" name="subject" placeholder="Project subject" required>
+          <select name="topic" required>
+            <option value="">Choose topic</option>
+            <option>AutoCAD Drafting</option>
+            <option>RCC Structural Drawing</option>
+            <option>BOQ & Estimation</option>
+            <option>Technical Documentation</option>
+            <option>Project Presentation</option>
+          </select>
+          <textarea name="message" rows="6" placeholder="Tell me about your project" required></textarea>
+          <button class="btn btn-primary full" type="submit">Send Message</button>
+          <p class="form-note" id="formNote">This form opens your email app with the message prepared.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="#home" class="brand footer-brand"><span class="brand-mark">HA</span><span class="brand-text">Hossain Ahmad</span></a>
+        <p>Civil Engineer | RCC Design Support | AutoCAD Drafting | BOQ | Documentation</p>
+      </div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#resume">Resume</a>
+        <a href="#contact">Contact</a>
+
+        <a href="admin.html" class="footer-admin-link">Admin</a>
+      </div>
+    </div>
+    <div class="container copyright">© <span id="year"></span> Hossain Ahmad. All Rights Reserved.</div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+  <script src="site-content.js"></script>
+  <script src="projects-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

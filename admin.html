@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Project Admin | Hossain Ahmad</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { background: #f6f8fb; }
+    .admin-page { padding-top: 165px; }
+    .admin-layout { display: grid; grid-template-columns: 360px 1fr; gap: 26px; align-items: start; }
+    .admin-panel, .admin-form-card, .admin-categories-card, .setup-card { background: #fff; border-radius: 24px; box-shadow: var(--shadow); padding: 24px; }
+    .admin-panel { position: sticky; top: 130px; }
+    .admin-note { color: var(--muted); max-width: 980px; margin-bottom: 28px; }
+    .admin-section-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin: 0 0 14px; color: var(--navy); }
+    .project-list { display: grid; gap: 10px; max-height: 480px; overflow: auto; padding-right: 5px; }
+    .project-list button, .category-list button { width: 100%; border: 1px solid #e2e9ef; background: #fff; text-align: left; border-radius: 16px; padding: 12px 14px; cursor: pointer; color: var(--navy); font-weight: 800; }
+    .project-list button small, .category-list button small { color: var(--muted); font-weight: 700; }
+    .project-list button.active, .category-list button.active { border-color: var(--orange); background: var(--cream); }
+    .admin-actions { display: grid; gap: 10px; margin-top: 18px; }
+    .admin-btn { border: 0; border-radius: 999px; padding: 13px 16px; cursor: pointer; font-weight: 900; background: var(--orange); color: var(--navy); }
+    .admin-btn.secondary { background: var(--navy); color: #fff; }
+    .admin-btn.light { background: #edf2f6; color: var(--navy); }
+    .admin-btn.danger { background: #ffe7e7; color: #a51616; }
+    .admin-btn.warning { background: #fff0c2; color: #6b4700; }
+    .admin-btn:disabled { opacity: .45; cursor: not-allowed; }
+    .admin-btn.small { padding: 10px 13px; font-size: .88rem; }
+    .admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .admin-field { display: grid; gap: 7px; }
+    .admin-field.full { grid-column: 1 / -1; }
+    .admin-field label { font-weight: 900; color: var(--navy); }
+    .admin-field input, .admin-field select, .admin-field textarea { width: 100%; border: 1px solid #d9e1e8; border-radius: 14px; padding: 13px 14px; font: inherit; outline: none; background: #fff; }
+    .admin-field textarea { min-height: 92px; resize: vertical; }
+    .admin-field input:focus, .admin-field select:focus, .admin-field textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(246,166,35,.15); }
+    .admin-preview { margin-top: 24px; border: 1px solid #e7edf2; border-radius: 20px; overflow: hidden; background: #fff; display: grid; grid-template-columns: 280px 1fr; }
+    .admin-preview img { width: 100%; height: 220px; object-fit: cover; background: #edf2f6; }
+    .admin-preview div { padding: 20px; }
+    .admin-alert { margin-top: 16px; padding: 12px 14px; border-radius: 14px; background: #fff7ed; color: #8a5700; border: 1px solid rgba(246,166,35,.35); }
+
+    .image-upload-box { border: 2px dashed #d9e1e8; background: #fbfdff; border-radius: 18px; padding: 16px; display: grid; gap: 10px; transition: .25s ease; }
+    .image-upload-box.dragover { border-color: var(--orange); background: var(--cream); box-shadow: 0 0 0 4px rgba(246,166,35,.14); }
+    .image-upload-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .image-upload-row input[type="file"] { flex: 1; min-width: 240px; }
+    .image-upload-help { color: var(--muted); font-size: .9rem; }
+    .upload-file-name { font-weight: 800; color: var(--blue); font-size: .9rem; }
+    .upload-status { display: inline-flex; align-items: center; min-height: 20px; color: var(--muted); font-size: .9rem; font-weight: 800; }
+    .upload-preview-wrap { display: none; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; border: 1px solid #e7edf2; background: #fff; border-radius: 16px; padding: 10px; }
+    .upload-preview-wrap.show { display: grid; }
+    .upload-preview-wrap img { width: 150px; height: 92px; object-fit: cover; border-radius: 12px; background: #edf2f6; }
+    .upload-preview-wrap strong { color: var(--navy); display: block; margin-bottom: 4px; }
+    .upload-preview-wrap span { color: var(--muted); font-size: .9rem; }
+    .image-url-small { word-break: break-all; font-size: .82rem; color: var(--blue); margin-top: 6px; }
+    .gallery-upload-tools { display: grid; gap: 10px; border: 1px dashed #d9e1e8; border-radius: 16px; padding: 14px; background: #fbfdff; }
+    .gallery-upload-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .gallery-upload-row input[type="file"] { flex: 1; min-width: 260px; }
+    .gallery-preview-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+    .gallery-preview-strip img { width: 100%; height: 80px; object-fit: cover; border-radius: 12px; border: 1px solid #e7edf2; background: #edf2f6; }
+
+
+    .admin-success { background: #eaf8ef; color: #176735; border-color: #b8e6c6; }
+    .admin-error { background: #ffe7e7; color: #a51616; border-color: #ffc6c6; }
+    .admin-categories-card { margin-bottom: 24px; }
+    .category-add-grid { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
+    .category-list { display: grid; gap: 10px; margin-top: 14px; }
+    .category-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+    .admin-login-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: linear-gradient(135deg, var(--navy), var(--navy-2)); }
+    .admin-login-card { width: min(500px, 94vw); background: #fff; border-radius: 28px; padding: 34px; box-shadow: 0 30px 90px rgba(0,0,0,.28); border-top: 6px solid var(--orange); }
+    .admin-login-card h1 { color: var(--navy); font-size: 2rem; line-height: 1.1; margin: 12px 0 10px; }
+    .admin-login-card p { color: var(--muted); margin-bottom: 22px; }
+    .admin-login-card label { display: block; font-weight: 900; color: var(--navy); margin-bottom: 8px; }
+    .admin-login-card input { width: 100%; border: 1px solid #d9e1e8; border-radius: 14px; padding: 14px 16px; font: inherit; outline: none; margin-bottom: 14px; }
+    .admin-login-card input:focus { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(246,166,35,.15); }
+    .admin-login-error { min-height: 24px; color: #a51616; font-weight: 800; margin-top: 10px; }
+    body.admin-locked .site-header, body.admin-locked .admin-page { display: none; }
+    body:not(.admin-locked) .admin-login-shell { display: none; }
+    .hidden { display: none !important; }
+
+    .complete-admin-card { background:#fff; border-radius:24px; box-shadow:var(--shadow); padding:24px; margin-bottom:24px; }
+    .complete-admin-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 18px; }
+    .complete-admin-tabs button { border:1px solid #e2e9ef; background:#fff; color:var(--navy); border-radius:999px; padding:10px 14px; font-weight:900; cursor:pointer; }
+    .complete-admin-tabs button.active { background:var(--orange); border-color:var(--orange); }
+    .content-panel { display:none; }
+    .content-panel.active { display:block; }
+    .content-help { color:var(--muted); font-size:.9rem; margin:6px 0 12px; }
+    .image-mini-row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .image-mini-row input[type=file] { max-width:280px; }
+    .section-divider { border:0; border-top:1px solid #e7edf2; margin:18px 0; }
+    .upload-center { background: linear-gradient(135deg, rgba(7,29,43,.04), rgba(246,166,35,.10)); border: 1px solid rgba(246,166,35,.24); }
+    .upload-center-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; align-items: end; }
+    .upload-result-card { display:none; margin-top: 14px; border: 1px solid #e7edf2; border-radius: 18px; padding: 12px; background: #fff; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; }
+    .upload-result-card.show { display: grid; }
+    .upload-result-card img { width: 130px; height: 86px; object-fit: cover; border-radius: 12px; background: #edf2f6; }
+    .upload-result-card .file-icon { width: 130px; height: 86px; display:grid; place-items:center; border-radius:12px; background:var(--cream); color:var(--navy); font-weight:900; }
+    .upload-result-card code { display:block; word-break: break-all; color: var(--blue); font-size:.82rem; margin: 4px 0 8px; }
+    .mini-btn-row { display:flex; gap:8px; flex-wrap:wrap; }
+
+    @media(max-width: 1050px) { .admin-layout { grid-template-columns: 1fr; } .admin-panel { position: static; } .admin-preview { grid-template-columns: 1fr; } }
+    @media(max-width: 700px) { .admin-form-grid, .category-add-grid { grid-template-columns: 1fr; } }
+
+    /* Dynamic admin panel motion */
+    .admin-login-shell { background-size: 220% 220%; animation: gradientShift 14s ease infinite; }
+    .admin-login-card, .admin-panel, .admin-form-card, .admin-categories-card, .setup-card { animation: floatSoft 7.5s ease-in-out infinite; }
+    .admin-form-card { animation-delay: .45s; }
+    .admin-categories-card { animation-delay: .85s; }
+    .project-list button, .category-list button, .admin-btn { transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
+    .project-list button:hover, .category-list button:hover, .admin-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(11,43,64,.14); }
+    .admin-field input, .admin-field select, .admin-field textarea, .admin-login-card input { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    .admin-field input:focus, .admin-field select:focus, .admin-field textarea:focus, .admin-login-card input:focus { transform: translateY(-2px); }
+  </style>
+</head>
+<body class="admin-locked">
+
+  <section class="admin-login-shell" id="adminLoginShell">
+    <div class="admin-login-card">
+      <span class="eyebrow dark">Secure Admin</span>
+      <h1>Project Admin Login</h1>
+     
+      <div class="admin-alert admin-error hidden" id="configError">Supabase is not configured yet. Open <strong>supabase-config.js</strong> and paste your Project URL and anon public key.</div>
+      <form id="adminLoginForm">
+        <label for="adminEmail">Admin Email</label>
+        <input type="email" id="adminEmail" autocomplete="username" placeholder="your@email.com" required />
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" autocomplete="current-password" placeholder="Enter password" required />
+        <button class="admin-btn" type="submit" style="width:100%;">Login</button>
+        <div class="admin-login-error" id="adminLoginError"></div>
+      </form>
+      
+    </div>
+  </section>
+
+  <header class="site-header">
+    <nav class="navbar container">
+      <a href="index.html" class="brand"><span class="brand-mark">HA</span><span class="brand-text">Hossain Ahmad</span></a>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><button class="nav-cta" id="adminLogoutBtn" type="button" style="border:0;cursor:pointer;">Logout</button><a class="nav-cta" href="index.html#projects">Back to Website</a></div>
+    </nav>
+  </header>
+
+  <main class="admin-page section">
+    <div class="container">
+      <span class="eyebrow dark">Database Admin Panel</span>
+      <h1 style="color:var(--navy);font-size:clamp(2rem,4vw,3.2rem);margin:12px 0 18px;">Secure Project Admin</h1>
+      <p class="admin-note">Add/edit categories and projects directly in Supabase. Newest <strong>Project Schedule Date</strong> appears first on the public website.</p>
+
+      <div id="statusBox" class="admin-alert admin-success hidden"></div>
+
+      <div class="complete-admin-card" id="websiteContentManager">
+        <div class="admin-section-title">
+          <div>
+            <h2>Complete Website Admin Panel</h2>
+            <p class="content-help">Edit every public website section from here: header, hero, services, about, process, resume, FAQ, contact, footer, hero slides and profile image.</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="admin-btn light small" id="loadContentBtn" type="button">Reload Website Content</button>
+            <button class="admin-btn small" id="saveContentBtn" type="button">Save Full Website Content</button>
+          </div>
+        </div>
+
+        <div class="complete-admin-tabs" id="contentTabs">
+          <button class="active" data-panel="generalPanel" type="button">General</button>
+          <button data-panel="uploadPanel" type="button">Upload Center</button>
+          <button data-panel="heroPanel" type="button">Hero</button>
+          <button data-panel="servicesPanel" type="button">Services</button>
+          <button data-panel="aboutPanel" type="button">About</button>
+          <button data-panel="processPanel" type="button">Process</button>
+          <button data-panel="resumePanel" type="button">Resume</button>
+          <button data-panel="faqPanel" type="button">FAQ</button>
+          <button data-panel="contactPanel" type="button">Contact/Footer</button>
+        </div>
+
+        <div class="content-panel active" id="generalPanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>Site Title</label><input id="contentSiteTitle"></div>
+            <div class="admin-field"><label>Brand Name</label><input id="contentBrandName"></div>
+            <div class="admin-field"><label>Brand Mark</label><input id="contentBrandMark"></div>
+            <div class="admin-field"><label>Location</label><input id="contentLocation"></div>
+            <div class="admin-field"><label>Email</label><input id="contentEmail"></div>
+            <div class="admin-field"><label>Phone</label><input id="contentPhone"></div>
+            <div class="admin-field full"><label>Trust Strip Items — one item per line</label><textarea id="contentTrustItems"></textarea></div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="uploadPanel">
+          <div class="complete-admin-card upload-center" style="box-shadow:none;margin-bottom:0;">
+            <div class="admin-section-title">
+              <div>
+                <h2>Universal Upload Center</h2>
+                <p class="content-help">Upload images, CV/PDF, Office files or drawing files, then send the uploaded URL to any website/project field.</p>
+              </div>
+            </div>
+            <div class="upload-center-grid">
+              <div class="admin-field">
+                <label for="universalFileUpload">Choose file</label>
+                <input type="file" id="universalFileUpload" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.dwg,.dxf,.txt,.csv">
+              </div>
+              <div class="admin-field">
+                <label for="universalUploadTarget">Send uploaded URL to</label>
+                <select id="universalUploadTarget">
+                  <option value="active">Currently selected input/textarea</option>
+                  <option value="hero1">Hero Slide 1</option>
+                  <option value="hero2">Hero Slide 2</option>
+                  <option value="hero3">Hero Slide 3</option>
+                  <option value="about">About/Profile Image</option>
+                  <option value="heroCv">Hero Download CV Link</option>
+                  <option value="resumeCv">Resume CV File Link</option>
+                  <option value="projectImage">Selected Project Main Image</option>
+                  <option value="projectGallery">Selected Project Image Bundle / Gallery</option>
+                  <option value="copyOnly">Only upload + copy URL</option>
+                </select>
+              </div>
+              <div class="admin-field">
+                <label for="universalUploadFolder">Storage folder name</label>
+                <input id="universalUploadFolder" value="website-files" placeholder="website-files">
+              </div>
+              <div class="admin-field">
+                <label>&nbsp;</label>
+                <button class="admin-btn" id="universalUploadBtn" type="button">Upload & Apply URL</button>
+              </div>
+            </div>
+            <p class="content-help" id="universalUploadStatus">Tip: click any input/textarea first, choose “Currently selected input/textarea”, then upload.</p>
+            <div class="upload-result-card" id="universalUploadResult">
+              <div id="universalUploadPreviewBox" class="file-icon">FILE</div>
+              <div>
+                <strong id="universalUploadFileName">Uploaded file</strong>
+                <code id="universalUploadUrl"></code>
+                <div class="mini-btn-row">
+                  <button class="admin-btn small light" id="copyUniversalUrlBtn" type="button">Copy URL</button>
+                  <a class="admin-btn small secondary" id="openUniversalUrlBtn" href="#" target="_blank" rel="noopener">Open File</a>
+                </div>
+              </div>
+            </div>
+            <div class="admin-alert"><strong>Important:</strong> After uploading website content images/files, click <strong>Save Full Website Content</strong>. After uploading a project image, click <strong>Save Project to Database</strong>.</div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="heroPanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>Hero Eyebrow</label><input id="contentHeroEyebrow"></div>
+            <div class="admin-field"><label>Primary Button Text</label><input id="contentHeroPrimaryText"></div>
+            <div class="admin-field full"><label>Hero Title</label><textarea id="contentHeroTitle"></textarea></div>
+            <div class="admin-field full"><label>Hero Description</label><textarea id="contentHeroDescription"></textarea></div>
+            <div class="admin-field"><label>Primary Button Link</label><input id="contentHeroPrimaryLink"></div>
+            <div class="admin-field"><label>Secondary Button Text</label><input id="contentHeroSecondaryText"></div>
+            <div class="admin-field"><label>Secondary Button Link / CV</label><input id="contentHeroSecondaryLink"></div>
+            <div class="admin-field"><label>Form Title</label><input id="contentHeroFormTitle"></div>
+            <div class="admin-field full"><label>Form Text</label><input id="contentHeroFormText"></div>
+            <div class="admin-field full"><label>Hero Metrics — value|suffix|label</label><textarea id="contentHeroMetrics"></textarea></div>
+            <div class="admin-field full"><label>Quick Form Service Options — one item per line</label><textarea id="contentHeroServiceOptions"></textarea></div>
+            <div class="admin-field full"><label>Hero Slide Image URLs — one per line</label><textarea id="contentHeroSlides"></textarea>
+              <div class="image-mini-row">
+                <input type="file" id="siteImageUpload" accept="image/*">
+                <select id="siteImageTarget"><option value="hero1">Hero Slide 1</option><option value="hero2">Hero Slide 2</option><option value="hero3">Hero Slide 3</option><option value="about">About/Profile Image</option></select>
+                <button class="admin-btn small" id="uploadSiteImageBtn" type="button">Upload Selected Site Image</button>
+              </div>
+              <p class="content-help" id="siteImageUploadStatus">Upload to Supabase Storage, then save content.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="servicesPanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>Eyebrow</label><input id="contentServicesEyebrow"></div>
+            <div class="admin-field"><label>Title</label><input id="contentServicesTitle"></div>
+            <div class="admin-field full"><label>Description</label><textarea id="contentServicesDescription"></textarea></div>
+            <div class="admin-field full"><label>Service Cards — icon|title|description, one card per line</label><textarea id="contentServicesItems" style="min-height:190px"></textarea></div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="aboutPanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>Eyebrow</label><input id="contentAboutEyebrow"></div>
+            <div class="admin-field"><label>Title</label><input id="contentAboutTitle"></div>
+            <div class="admin-field full"><label>About Image URL</label><input id="contentAboutImage"></div>
+            <div class="admin-field"><label>Experience Badge Number</label><input id="contentAboutBadgeNumber"></div>
+            <div class="admin-field"><label>Experience Badge Text</label><input id="contentAboutBadgeText"></div>
+            <div class="admin-field full"><label>Description</label><textarea id="contentAboutDescription"></textarea></div>
+            <div class="admin-field full"><label>About List — one item per line, use Title: details</label><textarea id="contentAboutList"></textarea></div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="processPanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>Eyebrow</label><input id="contentProcessEyebrow"></div>
+            <div class="admin-field"><label>Title</label><input id="contentProcessTitle"></div>
+            <div class="admin-field full"><label>Description</label><textarea id="contentProcessDescription"></textarea></div>
+            <div class="admin-field full"><label>Process Steps — number|title|description</label><textarea id="contentProcessSteps" style="min-height:150px"></textarea></div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="resumePanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>Resume Eyebrow</label><input id="contentResumeEyebrow"></div>
+            <div class="admin-field"><label>Resume Title</label><input id="contentResumeTitle"></div>
+            <div class="admin-field"><label>CV Button Text</label><input id="contentResumeButtonText"></div>
+            <div class="admin-field"><label>CV File Link</label><input id="contentResumeButtonLink"></div>
+            <div class="admin-field full"><label>Snapshot Text</label><textarea id="contentResumeSnapshot"></textarea></div>
+            <div class="admin-field full"><label>Timeline — period|title|description</label><textarea id="contentResumeTimeline" style="min-height:150px"></textarea></div>
+            <hr class="section-divider admin-field full">
+            <div class="admin-field"><label>Projects Section Eyebrow</label><input id="contentProjectsEyebrow"></div>
+            <div class="admin-field"><label>Projects Section Title</label><input id="contentProjectsTitle"></div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="faqPanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>FAQ Eyebrow</label><input id="contentFaqEyebrow"></div>
+            <div class="admin-field"><label>FAQ Title</label><input id="contentFaqTitle"></div>
+            <div class="admin-field full"><label>FAQ Description</label><textarea id="contentFaqDescription"></textarea></div>
+            <div class="admin-field full"><label>FAQ Items — question|answer</label><textarea id="contentFaqItems" style="min-height:170px"></textarea></div>
+          </div>
+        </div>
+
+        <div class="content-panel" id="contactPanel">
+          <div class="admin-form-grid">
+            <div class="admin-field"><label>Contact Eyebrow</label><input id="contentContactEyebrow"></div>
+            <div class="admin-field"><label>Contact Title</label><input id="contentContactTitle"></div>
+            <div class="admin-field full"><label>Contact Description</label><textarea id="contentContactDescription"></textarea></div>
+            <div class="admin-field"><label>Contact Email</label><input id="contentContactEmail"></div>
+            <div class="admin-field"><label>Contact Phone</label><input id="contentContactPhone"></div>
+            <div class="admin-field"><label>LinkedIn URL</label><input id="contentContactLinkedin"></div>
+            <div class="admin-field"><label>Contact Location</label><input id="contentContactLocation"></div>
+            <div class="admin-field full"><label>Contact Form Service Options — one item per line</label><textarea id="contentContactServiceOptions"></textarea></div>
+            <div class="admin-field full"><label>Form Note</label><input id="contentContactFormNote"></div>
+            <div class="admin-field"><label>Footer Tagline</label><input id="contentFooterTagline"></div>
+            <div class="admin-field"><label>Copyright Name</label><input id="contentFooterName"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="admin-categories-card">
+        <div class="admin-section-title">
+          <h2>Categories</h2>
+          <button class="admin-btn light small" id="importSeedBtn" type="button">Import Seed Data</button>
+        </div>
+        <div class="category-add-grid">
+          <div class="admin-field"><label for="newCategoryLabel">New Category Name</label><input id="newCategoryLabel" placeholder="Interior Design" /></div>
+          <div class="admin-field"><label for="newCategoryId">Category ID</label><input id="newCategoryId" placeholder="interior-design" /></div>
+          <button class="admin-btn" id="addCategoryBtn" type="button">Add Category</button>
+        </div>
+        <div class="category-list" id="categoryList"></div>
+      </div>
+
+      <div class="admin-layout">
+        <aside class="admin-panel">
+          <h2>Projects</h2>
+          <div class="project-list" id="adminProjectList"></div>
+          <div class="admin-actions">
+            <button class="admin-btn" id="newProjectBtn">+ New Project</button>
+            <button class="admin-btn warning" id="undoBtn" disabled>Undo Last DB Change</button>
+            <button class="admin-btn danger" id="deleteBtn">Delete Selected</button>
+            <button class="admin-btn light" id="reloadBtn">Reload From Database</button>
+          </div>
+          <div class="admin-alert"><strong>Image:</strong> use the direct uploader in the form. It uploads to Supabase Storage and automatically fills the image URL.</div>
+        </aside>
+
+        <section class="admin-form-card">
+          <h2>Project Details</h2>
+          <form id="projectForm" class="admin-form-grid">
+            <div class="admin-field"><label for="id">Project ID / Slug</label><input id="id" name="id" required placeholder="my-new-project" /></div>
+            <div class="admin-field"><label for="title">Title</label><input id="title" name="title" required /></div>
+            <div class="admin-field"><label for="tag">Tag</label><input id="tag" name="tag" placeholder="Structural" /></div>
+            <div class="admin-field"><label for="category">Category</label><select id="category" name="category" required></select></div>
+            <div class="admin-field"><label for="year">Display Year</label><input id="yearField" name="year" placeholder="2026" /></div>
+            <div class="admin-field"><label for="scheduleDate">Project Schedule Date / Sort Date</label><input id="scheduleDate" name="scheduleDate" type="date" /></div>
+            <div class="admin-field full"><label for="image">Image path or URL (optional)</label><input id="image" name="image" placeholder="Leave empty, paste assets/... path, or upload to get Supabase URL" /></div>
+            <div class="admin-field full">
+              <label for="galleryImages">Project Image Bundle / Gallery URLs — one per line</label>
+              <textarea id="galleryImages" name="galleryImages" placeholder="Paste image URLs here, one per line. These images will appear as a moving gallery on the project detail page."></textarea>
+              <div class="gallery-upload-tools">
+                <div class="gallery-upload-row">
+                  <input id="galleryUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple />
+                  <button class="admin-btn small" id="uploadGalleryBtn" type="button">Upload Gallery Images</button>
+                  <button class="admin-btn light small" id="clearGalleryBtn" type="button">Clear Gallery</button>
+                </div>
+                <div class="image-upload-help"><strong>Gallery:</strong> choose multiple images → Upload Gallery Images → Save Project to Database. Main image stays separate.</div>
+                <div class="upload-status" id="galleryUploadStatus"></div>
+                <div class="gallery-preview-strip" id="galleryPreviewStrip"></div>
+              </div>
+            </div>
+            <div class="admin-field full">
+              <label for="imageUpload">Direct Upload Project Image</label>
+              <div class="image-upload-box" id="imageDropZone">
+                <div class="image-upload-row">
+                  <input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp,image/gif" />
+                  <button class="admin-btn small" id="uploadImageBtn" type="button">Upload Image</button>
+                  <button class="admin-btn light small" id="clearImageBtn" type="button">Clear</button>
+                </div>
+                <div class="upload-file-name" id="uploadFileName">No image selected.</div>
+                <div class="image-upload-help">Drag & drop an image here or choose file. Max 20 MB for general uploads; project image should be image format. Upload saves in Supabase Storage bucket: <strong>site-uploads</strong>.</div>
+                <div class="upload-status" id="uploadStatus"></div>
+                <div class="upload-preview-wrap" id="uploadPreviewWrap">
+                  <img id="localUploadPreview" src="" alt="Selected image preview" />
+                  <div>
+                    <strong id="uploadPreviewTitle">Selected image preview</strong>
+                    <span id="uploadPreviewNote">This preview is local. Click Upload Image, then Save Project to Database.</span>
+                    <div class="image-url-small" id="uploadedUrlText"></div>
+                  </div>
+                </div>
+                <div class="image-upload-help"><strong>Note:</strong> Choose file = local preview only. To publish it, click <strong>Upload Image</strong>, then <strong>Save Project to Database</strong>.</div>
+              </div>
+            </div>
+            <div class="admin-field full"><label for="description">Short Description</label><textarea id="description" name="description"></textarea></div>
+            <div class="admin-field"><label for="location">Location</label><input id="location" name="location" /></div>
+            <div class="admin-field"><label for="client">Client</label><input id="client" name="client" /></div>
+            <div class="admin-field full"><label for="role">Role</label><input id="role" name="role" /></div>
+            <div class="admin-field full"><label for="overview">Project Overview</label><textarea id="overview" name="overview"></textarea></div>
+            <div class="admin-field full"><label for="responsibilities">Responsibilities — one item per line</label><textarea id="responsibilities" name="responsibilities"></textarea></div>
+            <div class="admin-field full"><label for="deliverables">Deliverables — one item per line</label><textarea id="deliverables" name="deliverables"></textarea></div>
+            <div class="admin-field full"><label for="tools">Tools & Skills — one item per line</label><textarea id="tools" name="tools"></textarea></div>
+            <div class="admin-field full"><label><input id="isPublished" name="isPublished" type="checkbox" checked style="width:auto;margin-right:8px;" /> Publish on website</label></div>
+            <div class="admin-field full"><button class="admin-btn" type="submit">Save Project to Database</button></div>
+          </form>
+          <div class="admin-preview" id="adminPreview"><img id="previewImage" src="assets/project-structural.png" alt="Preview"><div><span class="project-tag" id="previewTag">Project</span><h3 id="previewTitle">Project title</h3><p id="previewDescription">Short description preview.</p></div></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="site-content.js"></script>
+  <script src="projects-data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script>
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $all = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    let projects = [];
+    let categories = [];
+    let selectedId = '';
+    const undoStack = [];
+
+    const els = {
+      configError: $('#configError'), loginForm: $('#adminLoginForm'), loginError: $('#adminLoginError'), logoutBtn: $('#adminLogoutBtn'),
+      statusBox: $('#statusBox'), projectList: $('#adminProjectList'), categoryList: $('#categoryList'), categorySelect: $('#category'),
+      form: $('#projectForm'), newProjectBtn: $('#newProjectBtn'), deleteBtn: $('#deleteBtn'), undoBtn: $('#undoBtn'), reloadBtn: $('#reloadBtn'),
+      addCategoryBtn: $('#addCategoryBtn'), newCategoryLabel: $('#newCategoryLabel'), newCategoryId: $('#newCategoryId'), importSeedBtn: $('#importSeedBtn'),
+      previewImage: $('#previewImage'), previewTag: $('#previewTag'), previewTitle: $('#previewTitle'), previewDescription: $('#previewDescription'),
+      imageUpload: $('#imageUpload'), uploadImageBtn: $('#uploadImageBtn'), clearImageBtn: $('#clearImageBtn'), imageDropZone: $('#imageDropZone'), uploadFileName: $('#uploadFileName'), uploadStatus: $('#uploadStatus'),
+      uploadPreviewWrap: $('#uploadPreviewWrap'), localUploadPreview: $('#localUploadPreview'), uploadPreviewTitle: $('#uploadPreviewTitle'), uploadPreviewNote: $('#uploadPreviewNote'), uploadedUrlText: $('#uploadedUrlText'),
+      galleryUpload: $('#galleryUpload'), uploadGalleryBtn: $('#uploadGalleryBtn'), clearGalleryBtn: $('#clearGalleryBtn'), galleryUploadStatus: $('#galleryUploadStatus'), galleryPreviewStrip: $('#galleryPreviewStrip')
+    };
+
+    function slugify(text) { return window.HossainSupabase.slugify(text); }
+    function arr(value) { return window.HossainSupabase.toArray(value); }
+    function today() { return new Date().toISOString().slice(0, 10); }
+    function clone(value) { return JSON.parse(JSON.stringify(value)); }
+    function sortProjects(list) { return [...list].sort((a,b) => String(b.scheduleDate || '').localeCompare(String(a.scheduleDate || ''))); }
+    function showStatus(message, type = 'success') {
+      els.statusBox.className = `admin-alert ${type === 'error' ? 'admin-error' : 'admin-success'}`;
+      els.statusBox.innerHTML = message;
+      els.statusBox.classList.remove('hidden');
+      setTimeout(() => els.statusBox.classList.add('hidden'), 6000);
+    }
+
+    function setLoginError(message) { els.loginError.textContent = message || ''; }
+
+
+    let selectedUploadFile = null;
+    let selectedUploadObjectUrl = '';
+
+    function setUploadStatus(message = '', type = 'normal') {
+      if (!els.uploadStatus) return;
+      els.uploadStatus.textContent = message;
+      els.uploadStatus.style.color = type === 'error' ? '#a51616' : (type === 'success' ? '#176735' : 'var(--muted)');
+    }
+
+
+    function setGalleryStatus(message = '', type = 'normal') {
+      if (!els.galleryUploadStatus) return;
+      els.galleryUploadStatus.textContent = message;
+      els.galleryUploadStatus.style.color = type === 'error' ? '#a51616' : (type === 'success' ? '#176735' : 'var(--muted)');
+    }
+
+    function getGalleryUrls() {
+      return linesToArray($('#galleryImages') ? $('#galleryImages').value : '');
+    }
+
+    function setGalleryUrls(urls) {
+      const unique = Array.from(new Set((urls || []).map(url => String(url || '').trim()).filter(Boolean)));
+      if ($('#galleryImages')) $('#galleryImages').value = unique.join('\n');
+      renderGalleryPreview();
+    }
+
+    function renderGalleryPreview() {
+      if (!els.galleryPreviewStrip) return;
+      const urls = getGalleryUrls();
+      els.galleryPreviewStrip.innerHTML = urls.slice(0, 12).map(url => `<img src="${url.replaceAll('"','&quot;')}" alt="Gallery preview" onerror="this.style.opacity=.25">`).join('');
+      if (!urls.length) els.galleryPreviewStrip.innerHTML = '';
+    }
+
+    function previewSelectedGalleryFiles() {
+      if (!els.galleryPreviewStrip || !els.galleryUpload) return;
+      const files = Array.from(els.galleryUpload.files || []);
+      if (!files.length) {
+        renderGalleryPreview();
+        setGalleryStatus('');
+        return;
+      }
+      const previews = files.slice(0, 12).map(file => {
+        const localUrl = URL.createObjectURL(file);
+        setTimeout(() => URL.revokeObjectURL(localUrl), 15000);
+        return `<img src="${localUrl}" alt="Selected gallery image preview">`;
+      }).join('');
+      els.galleryPreviewStrip.innerHTML = previews;
+      setGalleryStatus(`${files.length} image(s) selected. Click Upload Gallery Images.`, 'success');
+    }
+
+    async function uploadGalleryImages() {
+      const files = els.galleryUpload && els.galleryUpload.files ? Array.from(els.galleryUpload.files) : [];
+      if (!files.length) {
+        setGalleryStatus('Choose one or more gallery images first.', 'error');
+        alert('Choose one or more gallery images first.');
+        return;
+      }
+
+      if (!window.HossainSupabase || !window.HossainSupabase.hasConfig || !window.HossainSupabase.hasConfig()) {
+        setGalleryStatus('Supabase config missing. Check supabase-config.js.', 'error');
+        showStatus('Supabase config missing. Check <strong>supabase-config.js</strong>.', 'error');
+        return;
+      }
+
+      const projectId = slugify($('#id').value.trim() || $('#title').value.trim() || 'project');
+      if (!projectId) {
+        setGalleryStatus('Write Project ID or Title first.', 'error');
+        return;
+      }
+
+      try {
+        els.uploadGalleryBtn.disabled = true;
+        setGalleryStatus(`Uploading 0/${files.length} gallery image(s)...`);
+        const uploaded = [];
+
+        for (let i = 0; i < files.length; i += 1) {
+          const file = files[i];
+          const fileType = String(file.type || '').toLowerCase();
+          const fileName = String(file.name || '').toLowerCase();
+          const looksLikeImage = fileType.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(fileName);
+          if (!looksLikeImage) throw new Error(`Gallery accepts image files only: ${file.name || 'unknown file'}`);
+          if (file.size > 20 * 1024 * 1024) throw new Error(`${file.name} is too large. Keep each image under 20 MB.`);
+
+          setGalleryStatus(`Uploading ${i + 1}/${files.length}: ${file.name}`);
+          const url = await window.HossainSupabase.uploadAdminFile(file, `projects/${projectId}/gallery`);
+          uploaded.push(url);
+        }
+
+        setGalleryUrls([...getGalleryUrls(), ...uploaded]);
+        if (els.galleryUpload) els.galleryUpload.value = '';
+        setGalleryStatus(`Uploaded ${uploaded.length} gallery image(s). Now click Save Project to Database.`, 'success');
+        showStatus('Gallery images uploaded. Click <strong>Save Project to Database</strong> to publish the image bundle.');
+      } catch (error) {
+        const message = error && error.message ? error.message : 'Gallery upload failed.';
+        setGalleryStatus(message, 'error');
+        showStatus(`${message}<br><br>If this is a Storage/RLS error, run <strong>RUN_THIS_FOR_ALL_UPLOAD_SYSTEM.sql</strong> with Role = postgres.`, 'error');
+      } finally {
+        els.uploadGalleryBtn.disabled = false;
+      }
+    }
+
+    function setSelectedUploadFile(file) {
+      selectedUploadFile = file || null;
+      if (selectedUploadObjectUrl) {
+        URL.revokeObjectURL(selectedUploadObjectUrl);
+        selectedUploadObjectUrl = '';
+      }
+
+      if (els.uploadFileName) {
+        els.uploadFileName.textContent = file ? `${file.name} (${Math.round(file.size / 1024)} KB)` : 'No image selected.';
+      }
+
+      if (file) {
+        selectedUploadObjectUrl = URL.createObjectURL(file);
+        if (els.uploadPreviewWrap) els.uploadPreviewWrap.classList.add('show');
+        if (els.localUploadPreview) els.localUploadPreview.src = selectedUploadObjectUrl;
+        if (els.uploadPreviewTitle) els.uploadPreviewTitle.textContent = 'New image selected';
+        if (els.uploadPreviewNote) els.uploadPreviewNote.textContent = 'Preview only. Click Upload Image, then Save Project to Database.';
+        if (els.uploadedUrlText) els.uploadedUrlText.textContent = '';
+        if (els.previewImage) {
+          els.previewImage.src = selectedUploadObjectUrl;
+          els.previewImage.alt = 'Selected local image preview - not saved yet';
+        }
+        setUploadStatus('Image selected. Click Upload Image to send it to Supabase Storage.', 'success');
+      } else {
+        if (els.uploadPreviewWrap) els.uploadPreviewWrap.classList.remove('show');
+        if (els.localUploadPreview) els.localUploadPreview.removeAttribute('src');
+        if (els.uploadedUrlText) els.uploadedUrlText.textContent = '';
+        setUploadStatus('');
+        updatePreview();
+      }
+    }
+
+    async function uploadSelectedProjectImage() {
+      const file = selectedUploadFile || (els.imageUpload && els.imageUpload.files && els.imageUpload.files[0]);
+      if (!file) return alert('Choose an image first.');
+
+      const projectId = slugify($('#id').value.trim() || $('#title').value.trim() || 'project');
+      if (!projectId) return alert('Write project title or project ID first.');
+
+      try {
+        els.uploadImageBtn.disabled = true;
+        setUploadStatus('Uploading image to Supabase Storage...');
+        const publicUrl = await window.HossainSupabase.uploadProjectImage(file, projectId);
+        $('#image').value = publicUrl;
+        if (els.uploadPreviewWrap) els.uploadPreviewWrap.classList.add('show');
+        if (els.localUploadPreview) els.localUploadPreview.src = publicUrl;
+        if (els.uploadPreviewTitle) els.uploadPreviewTitle.textContent = 'Uploaded image';
+        if (els.uploadPreviewNote) els.uploadPreviewNote.textContent = 'Upload complete. Now click Save Project to Database.';
+        if (els.uploadedUrlText) els.uploadedUrlText.textContent = publicUrl;
+        selectedUploadFile = null;
+        if (els.imageUpload) els.imageUpload.value = '';
+        updatePreview();
+        setUploadStatus('Uploaded successfully. Image URL has been filled automatically.', 'success');
+        showStatus('Image uploaded. Now click <strong>Save Project to Database</strong> to save this image with the project.');
+      } catch (error) {
+        setUploadStatus(error.message || 'Upload failed.', 'error');
+        showStatus(error.message || 'Upload failed.', 'error');
+      } finally {
+        els.uploadImageBtn.disabled = false;
+      }
+    }
+
+
+
+    let siteContent = clone(window.SITE_CONTENT || {});
+
+    const contentEls = {
+      loadBtn: $('#loadContentBtn'), saveBtn: $('#saveContentBtn'), tabs: $('#contentTabs'),
+      siteImageUpload: $('#siteImageUpload'), siteImageTarget: $('#siteImageTarget'), uploadSiteImageBtn: $('#uploadSiteImageBtn'), siteImageUploadStatus: $('#siteImageUploadStatus'),
+      universalFileUpload: $('#universalFileUpload'), universalUploadTarget: $('#universalUploadTarget'), universalUploadFolder: $('#universalUploadFolder'),
+      universalUploadBtn: $('#universalUploadBtn'), universalUploadStatus: $('#universalUploadStatus'), universalUploadResult: $('#universalUploadResult'),
+      universalUploadPreviewBox: $('#universalUploadPreviewBox'), universalUploadFileName: $('#universalUploadFileName'), universalUploadUrl: $('#universalUploadUrl'),
+      copyUniversalUrlBtn: $('#copyUniversalUrlBtn'), openUniversalUrlBtn: $('#openUniversalUrlBtn')
+    };
+
+    function getValue(id) { const el = $('#' + id); return el ? el.value.trim() : ''; }
+    function setValue(id, value) { const el = $('#' + id); if (el) el.value = value ?? ''; }
+    function linesToArray(text) { return String(text || '').split('\n').map(item => item.trim()).filter(Boolean); }
+    function arrayToLines(arr) { return Array.isArray(arr) ? arr.join('\n') : ''; }
+    function pipeItemsToText(items, fields) {
+      return Array.isArray(items) ? items.map(item => fields.map(field => item[field] ?? '').join('|')).join('\n') : '';
+    }
+    function textToPipeItems(text, fields) {
+      return linesToArray(text).map(line => {
+        const parts = line.split('|').map(part => part.trim());
+        const obj = {};
+        fields.forEach((field, index) => obj[field] = parts[index] || '');
+        return obj;
+      });
+    }
+
+    function fillContentForm(content) {
+      const c = content || {};
+      const general = c.general || {}, hero = c.hero || {}, trust = c.trust || {}, services = c.services || {}, about = c.about || {}, process = c.process || {}, projectsSection = c.projectsSection || {}, resume = c.resume || {}, faq = c.faq || {}, contact = c.contact || {}, footer = c.footer || {};
+      setValue('contentSiteTitle', general.siteTitle);
+      setValue('contentBrandName', general.brandName);
+      setValue('contentBrandMark', general.brandMark);
+      setValue('contentLocation', general.location);
+      setValue('contentEmail', general.email);
+      setValue('contentPhone', general.phone);
+      setValue('contentTrustItems', arrayToLines(trust.items));
+
+      setValue('contentHeroEyebrow', hero.eyebrow);
+      setValue('contentHeroTitle', hero.title);
+      setValue('contentHeroDescription', hero.description);
+      setValue('contentHeroPrimaryText', hero.primaryButtonText);
+      setValue('contentHeroPrimaryLink', hero.primaryButtonLink);
+      setValue('contentHeroSecondaryText', hero.secondaryButtonText);
+      setValue('contentHeroSecondaryLink', hero.secondaryButtonLink);
+      setValue('contentHeroFormTitle', hero.formTitle);
+      setValue('contentHeroFormText', hero.formText);
+      setValue('contentHeroSlides', arrayToLines(hero.slides));
+      setValue('contentHeroMetrics', pipeItemsToText(hero.metrics, ['value','suffix','label']));
+      setValue('contentHeroServiceOptions', arrayToLines(hero.serviceOptions));
+
+      setValue('contentServicesEyebrow', services.eyebrow);
+      setValue('contentServicesTitle', services.title);
+      setValue('contentServicesDescription', services.description);
+      setValue('contentServicesItems', pipeItemsToText(services.items, ['icon','title','description']));
+
+      setValue('contentAboutEyebrow', about.eyebrow);
+      setValue('contentAboutTitle', about.title);
+      setValue('contentAboutImage', about.image);
+      setValue('contentAboutBadgeNumber', about.badgeNumber);
+      setValue('contentAboutBadgeText', about.badgeText);
+      setValue('contentAboutDescription', about.description);
+      setValue('contentAboutList', arrayToLines(about.list));
+
+      setValue('contentProcessEyebrow', process.eyebrow);
+      setValue('contentProcessTitle', process.title);
+      setValue('contentProcessDescription', process.description);
+      setValue('contentProcessSteps', pipeItemsToText(process.steps, ['number','title','description']));
+
+      setValue('contentProjectsEyebrow', projectsSection.eyebrow);
+      setValue('contentProjectsTitle', projectsSection.title);
+
+      setValue('contentResumeEyebrow', resume.eyebrow);
+      setValue('contentResumeTitle', resume.title);
+      setValue('contentResumeSnapshot', resume.snapshot);
+      setValue('contentResumeButtonText', resume.buttonText);
+      setValue('contentResumeButtonLink', resume.buttonLink);
+      setValue('contentResumeTimeline', pipeItemsToText(resume.timeline, ['period','title','description']));
+
+      setValue('contentFaqEyebrow', faq.eyebrow);
+      setValue('contentFaqTitle', faq.title);
+      setValue('contentFaqDescription', faq.description);
+      setValue('contentFaqItems', pipeItemsToText(faq.items, ['question','answer']));
+
+      setValue('contentContactEyebrow', contact.eyebrow);
+      setValue('contentContactTitle', contact.title);
+      setValue('contentContactDescription', contact.description);
+      setValue('contentContactEmail', contact.email);
+      setValue('contentContactPhone', contact.phone);
+      setValue('contentContactLinkedin', contact.linkedin);
+      setValue('contentContactLocation', contact.location);
+      setValue('contentContactServiceOptions', arrayToLines(contact.serviceOptions));
+      setValue('contentContactFormNote', contact.formNote);
+      setValue('contentFooterTagline', footer.tagline);
+      setValue('contentFooterName', footer.copyrightName);
+    }
+
+    function readContentForm() {
+      return {
+        general: {
+          siteTitle: getValue('contentSiteTitle'), brandName: getValue('contentBrandName'), brandMark: getValue('contentBrandMark'),
+          location: getValue('contentLocation'), email: getValue('contentEmail'), phone: getValue('contentPhone'), adminLabel: 'Admin', quoteLabel: 'Get Quote'
+        },
+        hero: {
+          eyebrow: getValue('contentHeroEyebrow'), title: getValue('contentHeroTitle'), description: getValue('contentHeroDescription'),
+          primaryButtonText: getValue('contentHeroPrimaryText'), primaryButtonLink: getValue('contentHeroPrimaryLink'),
+          secondaryButtonText: getValue('contentHeroSecondaryText'), secondaryButtonLink: getValue('contentHeroSecondaryLink'),
+          slides: linesToArray(getValue('contentHeroSlides')), metrics: textToPipeItems(getValue('contentHeroMetrics'), ['value','suffix','label']),
+          formTitle: getValue('contentHeroFormTitle'), formText: getValue('contentHeroFormText'), serviceOptions: linesToArray(getValue('contentHeroServiceOptions'))
+        },
+        trust: { items: linesToArray(getValue('contentTrustItems')) },
+        services: { eyebrow: getValue('contentServicesEyebrow'), title: getValue('contentServicesTitle'), description: getValue('contentServicesDescription'), items: textToPipeItems(getValue('contentServicesItems'), ['icon','title','description']) },
+        about: { eyebrow: getValue('contentAboutEyebrow'), title: getValue('contentAboutTitle'), image: getValue('contentAboutImage'), badgeNumber: getValue('contentAboutBadgeNumber'), badgeText: getValue('contentAboutBadgeText'), description: getValue('contentAboutDescription'), list: linesToArray(getValue('contentAboutList')), buttonText:'View Resume', buttonLink:'#resume' },
+        process: { eyebrow: getValue('contentProcessEyebrow'), title: getValue('contentProcessTitle'), description: getValue('contentProcessDescription'), steps: textToPipeItems(getValue('contentProcessSteps'), ['number','title','description']) },
+        projectsSection: { eyebrow: getValue('contentProjectsEyebrow'), title: getValue('contentProjectsTitle') },
+        resume: { eyebrow: getValue('contentResumeEyebrow'), title: getValue('contentResumeTitle'), snapshot: getValue('contentResumeSnapshot'), buttonText: getValue('contentResumeButtonText'), buttonLink: getValue('contentResumeButtonLink'), timeline: textToPipeItems(getValue('contentResumeTimeline'), ['period','title','description']) },
+        faq: { eyebrow: getValue('contentFaqEyebrow'), title: getValue('contentFaqTitle'), description: getValue('contentFaqDescription'), items: textToPipeItems(getValue('contentFaqItems'), ['question','answer']) },
+        contact: { eyebrow: getValue('contentContactEyebrow'), title: getValue('contentContactTitle'), description: getValue('contentContactDescription'), email: getValue('contentContactEmail'), phone: getValue('contentContactPhone'), linkedin: getValue('contentContactLinkedin'), location: getValue('contentContactLocation'), serviceOptions: linesToArray(getValue('contentContactServiceOptions')), formNote: getValue('contentContactFormNote') },
+        footer: { tagline: getValue('contentFooterTagline'), copyrightName: getValue('contentFooterName') }
+      };
+    }
+
+    async function loadSiteContentAdmin() {
+      siteContent = clone(window.SITE_CONTENT || {});
+      try {
+        if (window.HossainSupabase.fetchSiteContent) {
+          const dbContent = await window.HossainSupabase.fetchSiteContent();
+          if (dbContent) siteContent = dbContent;
+        }
+      } catch (error) {
+        showStatus('Website content table not ready. Run RUN_THIS_FOR_COMPLETE_ADMIN.sql in Supabase SQL Editor first. Using local fallback.', 'error');
+      }
+      fillContentForm(siteContent);
+    }
+
+    async function saveSiteContentAdmin() {
+      try {
+        const content = readContentForm();
+        if (!window.HossainSupabase.saveSiteContent) throw new Error('Supabase client is missing saveSiteContent().');
+        siteContent = await window.HossainSupabase.saveSiteContent(content);
+        fillContentForm(siteContent);
+        showStatus('Full website content saved to Supabase. Refresh index.html with Ctrl+F5 to see changes.');
+      } catch (error) {
+        showStatus(error.message || 'Could not save website content.', 'error');
+      }
+    }
+
+    let lastFocusedEditable = null;
+    document.addEventListener('focusin', event => {
+      const el = event.target;
+      if (el && (el.matches('input[type="text"], input[type="url"], input:not([type]), textarea') || el.matches('#image, #contentAboutImage, #contentHeroSecondaryLink, #contentResumeButtonLink'))) {
+        lastFocusedEditable = el;
+      }
+    });
+
+    function setHeroSlideUrl(index, url) {
+      const slides = linesToArray(getValue('contentHeroSlides'));
+      while (slides.length < 3) slides.push('');
+      slides[index] = url;
+      setValue('contentHeroSlides', arrayToLines(slides));
+    }
+
+    function insertUrlIntoActiveField(url) {
+      const el = lastFocusedEditable;
+      if (!el) {
+        if (navigator.clipboard) navigator.clipboard.writeText(url).catch(() => {});
+        return 'No active field selected. URL copied if clipboard is allowed.';
+      }
+      if (el.tagName === 'TEXTAREA') {
+        const start = el.selectionStart ?? el.value.length;
+        const end = el.selectionEnd ?? el.value.length;
+        const prefix = el.value.slice(0, start);
+        const suffix = el.value.slice(end);
+        const spacer = prefix && !prefix.endsWith('\n') ? '\n' : '';
+        el.value = prefix + spacer + url + suffix;
+      } else {
+        el.value = url;
+      }
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      return 'Uploaded URL placed into the selected field.';
+    }
+
+    function applyUploadedUrl(target, url) {
+      if (target === 'hero1') { setHeroSlideUrl(0, url); return 'Hero Slide 1 updated.'; }
+      if (target === 'hero2') { setHeroSlideUrl(1, url); return 'Hero Slide 2 updated.'; }
+      if (target === 'hero3') { setHeroSlideUrl(2, url); return 'Hero Slide 3 updated.'; }
+      if (target === 'about') { setValue('contentAboutImage', url); return 'About/Profile image updated.'; }
+      if (target === 'heroCv') { setValue('contentHeroSecondaryLink', url); return 'Hero CV/download link updated.'; }
+      if (target === 'resumeCv') { setValue('contentResumeButtonLink', url); return 'Resume CV file link updated.'; }
+      if (target === 'projectImage') { $('#image').value = url; updatePreview(); return 'Selected project main image updated.'; }
+      if (target === 'projectGallery') { setGalleryUrls([...getGalleryUrls(), url]); return 'Uploaded URL added to selected project image bundle.'; }
+      if (target === 'active') return insertUrlIntoActiveField(url);
+      return 'Uploaded. Copy URL or open it from below.';
+    }
+
+    async function uploadUniversalAdminFile() {
+      const file = contentEls.universalFileUpload && contentEls.universalFileUpload.files && contentEls.universalFileUpload.files[0];
+      if (!file) return alert('Choose a file first.');
+      try {
+        contentEls.universalUploadBtn.disabled = true;
+        contentEls.universalUploadStatus.textContent = 'Uploading file to Supabase Storage...';
+        const folder = contentEls.universalUploadFolder.value || 'website-files';
+        const url = await window.HossainSupabase.uploadAdminFile(file, folder);
+        const target = contentEls.universalUploadTarget.value || 'copyOnly';
+        const appliedMessage = applyUploadedUrl(target, url);
+
+        if (contentEls.universalUploadResult) contentEls.universalUploadResult.classList.add('show');
+        if (contentEls.universalUploadFileName) contentEls.universalUploadFileName.textContent = file.name;
+        if (contentEls.universalUploadUrl) contentEls.universalUploadUrl.textContent = url;
+        if (contentEls.openUniversalUrlBtn) contentEls.openUniversalUrlBtn.href = url;
+        if (contentEls.universalUploadPreviewBox) {
+          if (String(file.type || '').startsWith('image/')) {
+            contentEls.universalUploadPreviewBox.className = '';
+            contentEls.universalUploadPreviewBox.innerHTML = `<img src="${url}" alt="Uploaded preview" style="width:130px;height:86px;object-fit:cover;border-radius:12px;background:#edf2f6;">`;
+          } else {
+            contentEls.universalUploadPreviewBox.className = 'file-icon';
+            contentEls.universalUploadPreviewBox.textContent = (file.name.split('.').pop() || 'FILE').toUpperCase();
+          }
+        }
+        contentEls.universalUploadStatus.textContent = appliedMessage + ' Now save the related section/database.';
+        showStatus(appliedMessage + ' Save the related section/database to publish.');
+      } catch (error) {
+        contentEls.universalUploadStatus.textContent = error.message || 'Upload failed.';
+        showStatus(error.message || 'Upload failed.', 'error');
+      } finally {
+        contentEls.universalUploadBtn.disabled = false;
+        if (contentEls.universalFileUpload) contentEls.universalFileUpload.value = '';
+      }
+    }
+
+    async function uploadSelectedSiteImage() {
+      const input = contentEls.siteImageUpload;
+      const file = input && input.files && input.files[0];
+      if (!file) return alert('Choose an image first.');
+      try {
+        contentEls.uploadSiteImageBtn.disabled = true;
+        contentEls.siteImageUploadStatus.textContent = 'Uploading site image...';
+        const target = contentEls.siteImageTarget.value;
+        const url = await window.HossainSupabase.uploadAdminFile(file, 'site-' + target);
+        const slides = linesToArray(getValue('contentHeroSlides'));
+        if (target === 'about') setValue('contentAboutImage', url);
+        else {
+          const index = target === 'hero1' ? 0 : (target === 'hero2' ? 1 : 2);
+          while (slides.length < 3) slides.push('');
+          slides[index] = url;
+          setValue('contentHeroSlides', arrayToLines(slides));
+        }
+        contentEls.siteImageUploadStatus.textContent = 'Image uploaded. Now click Save Full Website Content.';
+        showStatus('Site image uploaded. Click Save Full Website Content to publish this URL.');
+      } catch (error) {
+        contentEls.siteImageUploadStatus.textContent = error.message || 'Upload failed.';
+        showStatus(error.message || 'Upload failed.', 'error');
+      } finally {
+        contentEls.uploadSiteImageBtn.disabled = false;
+        if (input) input.value = '';
+      }
+    }
+
+    if (contentEls.tabs) {
+      contentEls.tabs.addEventListener('click', event => {
+        const button = event.target.closest('button[data-panel]');
+        if (!button) return;
+        $all('#contentTabs button').forEach(btn => btn.classList.remove('active'));
+        $all('.content-panel').forEach(panel => panel.classList.remove('active'));
+        button.classList.add('active');
+        const panel = $('#' + button.dataset.panel);
+        if (panel) panel.classList.add('active');
+      });
+    }
+    if (contentEls.loadBtn) contentEls.loadBtn.addEventListener('click', async () => { await loadSiteContentAdmin(); showStatus('Website content reloaded.'); });
+    if (contentEls.saveBtn) contentEls.saveBtn.addEventListener('click', saveSiteContentAdmin);
+    if (contentEls.uploadSiteImageBtn) contentEls.uploadSiteImageBtn.addEventListener('click', uploadSelectedSiteImage);
+    if (contentEls.universalUploadBtn) contentEls.universalUploadBtn.addEventListener('click', uploadUniversalAdminFile);
+    if (contentEls.copyUniversalUrlBtn) contentEls.copyUniversalUrlBtn.addEventListener('click', async () => {
+      const url = contentEls.universalUploadUrl ? contentEls.universalUploadUrl.textContent : '';
+      if (!url) return;
+      try { await navigator.clipboard.writeText(url); showStatus('Uploaded URL copied.'); } catch (e) { alert(url); }
+    });
+
+    async function requireAdminSession() {
+      if (!window.HossainSupabase || !window.HossainSupabase.hasConfig()) {
+        els.configError.classList.remove('hidden');
+        return false;
+      }
+      const admin = await window.HossainSupabase.isAdminUser();
+      if (admin) {
+        document.body.classList.remove('admin-locked');
+        await loadData();
+        return true;
+      }
+      document.body.classList.add('admin-locked');
+      return false;
+    }
+
+    els.loginForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      setLoginError('');
+      try {
+        await window.HossainSupabase.signIn($('#adminEmail').value.trim(), $('#adminPassword').value);
+        const admin = await window.HossainSupabase.isAdminUser();
+        if (!admin) {
+          await window.HossainSupabase.signOut();
+          setLoginError('Login successful, but this user is not in admin_users table. Add this user as admin in Supabase SQL.');
+          return;
+        }
+        document.body.classList.remove('admin-locked');
+        await loadData();
+      } catch (error) {
+        setLoginError(error.message || 'Login failed.');
+      }
+    });
+
+    els.logoutBtn.addEventListener('click', async () => {
+      await window.HossainSupabase.signOut();
+      document.body.classList.add('admin-locked');
+    });
+
+    async function loadData() {
+      await loadSiteContentAdmin();
+      categories = await window.HossainSupabase.fetchCategories() || [];
+      projects = await window.HossainSupabase.fetchProjects({ includeUnpublished: true }) || [];
+      renderCategories();
+      renderCategorySelect();
+      renderProjectList();
+      if (projects.length) selectProject(projects[0].id); else newProject();
+    }
+
+    function renderCategories() {
+      els.categoryList.innerHTML = categories.map(category => `
+        <div class="category-row">
+          <button type="button"><strong>${category.label}</strong><br><small>${category.id}</small></button>
+          <button class="admin-btn danger small" type="button" data-delete-category="${category.id}">Delete</button>
+        </div>
+      `).join('') || '<p>No categories yet.</p>';
+    }
+
+    function renderCategorySelect() {
+      els.categorySelect.innerHTML = categories.map(category => `<option value="${category.id}">${category.label}</option>`).join('');
+    }
+
+    function renderProjectList() {
+      const sorted = sortProjects(projects);
+      els.projectList.innerHTML = sorted.map(project => `
+        <button type="button" data-id="${project.id}" class="${project.id === selectedId ? 'active' : ''}">
+          ${project.isPublished === false ? '🔒 ' : ''}${project.title}<br>
+          <small>${project.year || ''} • ${project.scheduleDate || 'No sort date'}</small>
+        </button>
+      `).join('') || '<p>No project yet. Use Import Seed Data or + New Project.</p>';
+    }
+
+    function selectProject(id) {
+      selectedId = id;
+      const project = projects.find(item => item.id === id);
+      if (!project) return;
+      fillForm(project);
+      renderProjectList();
+    }
+
+    function fillForm(project) {
+      $('#id').value = project.id || '';
+      $('#title').value = project.title || '';
+      $('#tag').value = project.tag || '';
+      $('#category').value = project.category || (categories[0] && categories[0].id) || '';
+      $('#yearField').value = project.year || '';
+      $('#scheduleDate').value = project.scheduleDate || '';
+      $('#image').value = project.image || '';
+      $('#galleryImages').value = (project.galleryImages || project.gallery_images || []).join('\n');
+      renderGalleryPreview();
+      $('#description').value = project.description || '';
+      $('#location').value = project.location || '';
+      $('#client').value = project.client || '';
+      $('#role').value = project.role || '';
+      $('#overview').value = project.overview || '';
+      $('#responsibilities').value = (project.responsibilities || []).join('\n');
+      $('#deliverables').value = (project.deliverables || []).join('\n');
+      $('#tools').value = (project.tools || []).join('\n');
+      $('#isPublished').checked = project.isPublished !== false;
+      selectedUploadFile = null;
+      if (selectedUploadObjectUrl) {
+        URL.revokeObjectURL(selectedUploadObjectUrl);
+        selectedUploadObjectUrl = '';
+      }
+      if (els.imageUpload) els.imageUpload.value = '';
+      if (els.uploadFileName) els.uploadFileName.textContent = 'No image selected.';
+      if (els.uploadPreviewWrap) els.uploadPreviewWrap.classList.remove('show');
+      if (els.uploadedUrlText) els.uploadedUrlText.textContent = '';
+      setUploadStatus('');
+      updatePreview();
+    }
+
+    function readForm() {
+      const title = $('#title').value.trim();
+      const id = slugify($('#id').value.trim() || title);
+      return {
+        id, title,
+        tag: $('#tag').value.trim() || 'Project',
+        category: $('#category').value,
+        year: $('#yearField').value.trim(),
+        scheduleDate: $('#scheduleDate').value || today(),
+        image: $('#image').value.trim(),
+        galleryImages: linesToArray($('#galleryImages').value),
+        description: $('#description').value.trim(),
+        location: $('#location').value.trim(),
+        client: $('#client').value.trim(),
+        role: $('#role').value.trim(),
+        overview: $('#overview').value.trim(),
+        responsibilities: arr($('#responsibilities').value),
+        deliverables: arr($('#deliverables').value),
+        tools: arr($('#tools').value),
+        isPublished: $('#isPublished').checked
+      };
+    }
+
+    function newProject() {
+      selectedId = '';
+      fillForm({ id:'', title:'', tag:'Project', category:(categories[0] && categories[0].id) || '', year:new Date().getFullYear(), scheduleDate:today(), image:'', galleryImages:[], description:'', responsibilities:[], deliverables:[], tools:[], isPublished:true });
+      renderProjectList();
+    }
+
+    function updatePreview() {
+      const imageUrl = $('#image').value.trim();
+      if (selectedUploadObjectUrl && !imageUrl) {
+        els.previewImage.src = selectedUploadObjectUrl;
+        els.previewImage.alt = 'Selected local image preview - not saved yet';
+      } else {
+        els.previewImage.src = imageUrl || 'assets/project-structural.png';
+        els.previewImage.alt = imageUrl ? 'Project image preview' : 'Default preview only - no image saved';
+      }
+      els.previewImage.onerror = function () {
+        this.onerror = null;
+        this.src = 'assets/project-structural.png';
+        setUploadStatus('Image URL could not load. Check bucket policy or image path.', 'error');
+      };
+      els.previewTag.textContent = $('#tag').value.trim() || 'Project';
+      els.previewTitle.textContent = $('#title').value.trim() || 'Project title';
+      els.previewDescription.textContent = $('#description').value.trim() || 'Short description preview.';
+    }
+
+    async function pushUndoSnapshot() {
+      undoStack.push({ projects: clone(projects), categories: clone(categories) });
+      if (undoStack.length > 20) undoStack.shift();
+      els.undoBtn.disabled = false;
+    }
+
+    async function restoreSnapshot(snapshot) {
+      const currentProjects = await window.HossainSupabase.fetchProjects({ includeUnpublished: true }) || [];
+      const currentCategories = await window.HossainSupabase.fetchCategories() || [];
+      for (const category of snapshot.categories) await window.HossainSupabase.upsertCategory(category);
+      for (const project of currentProjects) {
+        if (!snapshot.projects.some(item => item.id === project.id)) await window.HossainSupabase.deleteProject(project.id);
+      }
+      for (const project of snapshot.projects) await window.HossainSupabase.upsertProject(project);
+      for (const category of currentCategories) {
+        if (!snapshot.categories.some(item => item.id === category.id)) {
+          try { await window.HossainSupabase.deleteCategory(category.id); } catch (_) {}
+        }
+      }
+      await loadData();
+    }
+
+    els.projectList.addEventListener('click', event => {
+      const button = event.target.closest('button[data-id]');
+      if (button) selectProject(button.dataset.id);
+    });
+
+    els.categoryList.addEventListener('click', async event => {
+      const button = event.target.closest('[data-delete-category]');
+      if (!button) return;
+      const id = button.dataset.deleteCategory;
+      if (!confirm(`Delete category "${id}"? It will fail if any project still uses it.`)) return;
+      try {
+        await pushUndoSnapshot();
+        await window.HossainSupabase.deleteCategory(id);
+        await loadData();
+        showStatus('Category deleted.');
+      } catch (error) {
+        showStatus(error.message, 'error');
+      }
+    });
+
+    els.form.addEventListener('input', updatePreview);
+
+
+    if (els.imageUpload) {
+      els.imageUpload.addEventListener('change', () => {
+        setSelectedUploadFile(els.imageUpload.files && els.imageUpload.files[0]);
+      });
+    }
+
+    if (els.uploadImageBtn) {
+      els.uploadImageBtn.addEventListener('click', uploadSelectedProjectImage);
+    }
+
+    if (els.clearImageBtn) {
+      els.clearImageBtn.addEventListener('click', () => {
+        if (els.imageUpload) els.imageUpload.value = '';
+        setSelectedUploadFile(null);
+        $('#image').value = '';
+        updatePreview();
+        setUploadStatus('Image path cleared. Click Save Project to Database to remove/change the saved image.', 'success');
+      });
+    }
+
+
+    if (els.galleryUpload) {
+      els.galleryUpload.addEventListener('change', previewSelectedGalleryFiles);
+    }
+
+    if (els.uploadGalleryBtn) {
+      els.uploadGalleryBtn.addEventListener('click', uploadGalleryImages);
+    }
+
+    const uploadGalleryButtonFallback = document.getElementById('uploadGalleryBtn');
+    if (uploadGalleryButtonFallback && !els.uploadGalleryBtn) {
+      uploadGalleryButtonFallback.addEventListener('click', uploadGalleryImages);
+    }
+
+    if (els.clearGalleryBtn) {
+      els.clearGalleryBtn.addEventListener('click', () => {
+        setGalleryUrls([]);
+        if (els.galleryUpload) els.galleryUpload.value = '';
+        setGalleryStatus('Gallery cleared. Click Save Project to Database to remove saved gallery images.', 'success');
+      });
+    }
+
+    if ($('#galleryImages')) {
+      $('#galleryImages').addEventListener('input', renderGalleryPreview);
+    }
+
+    if (els.imageDropZone) {
+      ['dragenter', 'dragover'].forEach(name => {
+        els.imageDropZone.addEventListener(name, event => {
+          event.preventDefault();
+          els.imageDropZone.classList.add('dragover');
+        });
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        els.imageDropZone.addEventListener(name, event => {
+          event.preventDefault();
+          els.imageDropZone.classList.remove('dragover');
+        });
+      });
+      els.imageDropZone.addEventListener('drop', event => {
+        const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+        if (file) setSelectedUploadFile(file);
+      });
+    }
+
+    els.form.addEventListener('submit', async event => {
+      event.preventDefault();
+      try {
+        await pushUndoSnapshot();
+        const project = readForm();
+        await window.HossainSupabase.upsertProject(project);
+        selectedId = project.id;
+        await loadData();
+        selectProject(project.id);
+        showStatus('Project saved to Supabase database.');
+      } catch (error) {
+        showStatus(error.message, 'error');
+      }
+    });
+
+    els.newProjectBtn.addEventListener('click', newProject);
+
+    els.deleteBtn.addEventListener('click', async () => {
+      if (!selectedId) return alert('Select a project first.');
+      if (!confirm('Delete selected project from database?')) return;
+      try {
+        await pushUndoSnapshot();
+        await window.HossainSupabase.deleteProject(selectedId);
+        selectedId = '';
+        await loadData();
+        showStatus('Project deleted.');
+      } catch (error) {
+        showStatus(error.message, 'error');
+      }
+    });
+
+    els.undoBtn.addEventListener('click', async () => {
+      const snapshot = undoStack.pop();
+      if (!snapshot) return;
+      try {
+        await restoreSnapshot(snapshot);
+        els.undoBtn.disabled = undoStack.length === 0;
+        showStatus('Last database change undone.');
+      } catch (error) {
+        showStatus(error.message, 'error');
+      }
+    });
+
+    els.reloadBtn.addEventListener('click', async () => {
+      await loadData();
+      showStatus('Reloaded from Supabase.');
+    });
+
+    els.addCategoryBtn.addEventListener('click', async () => {
+      const label = els.newCategoryLabel.value.trim();
+      const id = slugify(els.newCategoryId.value.trim() || label);
+      if (!label) return alert('Write category name first.');
+      try {
+        await pushUndoSnapshot();
+        await window.HossainSupabase.upsertCategory({ id, label, sortOrder: categories.length + 1 });
+        els.newCategoryLabel.value = '';
+        els.newCategoryId.value = '';
+        await loadData();
+        showStatus('Category added.');
+      } catch (error) {
+        showStatus(error.message, 'error');
+      }
+    });
+
+    els.importSeedBtn.addEventListener('click', async () => {
+      if (!confirm('Import the default projects-data.js items into Supabase? Existing same IDs will be updated.')) return;
+      try {
+        await pushUndoSnapshot();
+        const seedCategories = Array.isArray(window.PROJECT_CATEGORIES) ? window.PROJECT_CATEGORIES : [];
+        const seedProjects = Array.isArray(window.PROJECTS) ? window.PROJECTS : [];
+        for (const category of seedCategories) await window.HossainSupabase.upsertCategory(category);
+        for (const project of seedProjects) await window.HossainSupabase.upsertProject(project);
+        await loadData();
+        showStatus('Seed projects imported to Supabase.');
+      } catch (error) {
+        showStatus(error.message, 'error');
+      }
+    });
+
+    requireAdminSession();
+  </script>
+</body>
+</html>

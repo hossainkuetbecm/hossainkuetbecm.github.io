@@ -1,0 +1,187 @@
+
+    const root = document.getElementById('projectDetailRoot');
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function escapeHtml(value) {
+      return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+
+    async function loadSiteContentForDetail() {
+      let content = window.SITE_CONTENT || {};
+      if (window.HossainSupabase && window.HossainSupabase.hasConfig() && window.HossainSupabase.fetchSiteContent) {
+        try {
+          const dbContent = await window.HossainSupabase.fetchSiteContent();
+          if (dbContent) content = dbContent;
+        } catch (error) { console.warn('Site content not loaded on detail page', error); }
+      }
+      const general = content.general || {};
+      const footer = content.footer || {};
+      if (general.brandMark) document.querySelectorAll('.brand-mark').forEach(el => el.textContent = general.brandMark);
+      if (general.brandName) document.querySelectorAll('.brand-text').forEach(el => el.textContent = general.brandName);
+      const quote = document.querySelector('.nav-cta');
+      if (quote && general.quoteLabel) quote.textContent = general.quoteLabel;
+      const copyright = document.querySelector('.copyright');
+      if (copyright) copyright.innerHTML = `© <span id="year">${new Date().getFullYear()}</span> ${escapeHtml(footer.copyrightName || general.brandName || 'Hossain Ahmad')}. All Rights Reserved.`;
+      return content;
+    }
+
+    function listHtml(items) {
+      if (!Array.isArray(items) || !items.length) return '<p>Details will be updated soon.</p>';
+      return `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
+    }
+
+
+    function projectImages(project) {
+      const images = [];
+      if (project.image) images.push(project.image);
+      if (Array.isArray(project.galleryImages)) images.push(...project.galleryImages);
+      if (Array.isArray(project.gallery_images)) images.push(...project.gallery_images);
+      const clean = images.map(url => String(url || '').trim()).filter(Boolean);
+      return Array.from(new Set(clean.length ? clean : ['assets/project-structural.png']));
+    }
+
+    function galleryHtml(project) {
+      const images = projectImages(project);
+      const slides = images.map((url, index) => `
+        <div class="project-gallery-slide ${index === 0 ? 'active' : ''}" data-gallery-slide="${index}">
+          <img src="${escapeHtml(url)}" alt="${escapeHtml(project.title)} image ${index + 1}" onerror="this.src='assets/project-structural.png'">
+        </div>`).join('');
+      const thumbs = images.map((url, index) => `
+        <button class="project-gallery-thumb ${index === 0 ? 'active' : ''}" type="button" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}">
+          <img src="${escapeHtml(url)}" alt="Thumbnail ${index + 1}" onerror="this.src='assets/project-structural.png'">
+        </button>`).join('');
+      return `
+        <div class="project-gallery-bundle reveal" id="projectGalleryBundle">
+          <div class="project-gallery-stage" id="projectGalleryStage">
+            ${slides}
+            <button class="gallery-control prev" type="button" id="galleryPrev" aria-label="Previous image">‹</button>
+            <button class="gallery-control next" type="button" id="galleryNext" aria-label="Next image">›</button>
+            <div class="project-gallery-counter" id="galleryCounter">1 / ${images.length}</div>
+          </div>
+          <div class="project-gallery-thumbs" id="projectGalleryThumbs">${thumbs}</div>
+        </div>`;
+    }
+
+    function initProjectGallery() {
+      const bundle = document.getElementById('projectGalleryBundle');
+      if (!bundle) return;
+      const slides = Array.from(bundle.querySelectorAll('[data-gallery-slide]'));
+      const thumbs = Array.from(bundle.querySelectorAll('[data-gallery-thumb]'));
+      const counter = document.getElementById('galleryCounter');
+      let current = 0;
+      let timer = null;
+      const show = (index) => {
+        if (!slides.length) return;
+        current = (index + slides.length) % slides.length;
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+        thumbs.forEach((thumb, i) => thumb.classList.toggle('active', i === current));
+        if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
+        if (thumbs[current]) thumbs[current].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      };
+      const next = () => show(current + 1);
+      const prev = () => show(current - 1);
+      const restart = () => { if (timer) clearInterval(timer); if (slides.length > 1) timer = setInterval(next, 4500); };
+      const nextBtn = document.getElementById('galleryNext');
+      const prevBtn = document.getElementById('galleryPrev');
+      if (nextBtn) nextBtn.addEventListener('click', () => { next(); restart(); });
+      if (prevBtn) prevBtn.addEventListener('click', () => { prev(); restart(); });
+      thumbs.forEach(thumb => thumb.addEventListener('click', () => { show(Number(thumb.dataset.galleryThumb || 0)); restart(); }));
+      let startX = 0;
+      bundle.addEventListener('pointerdown', event => { startX = event.clientX; });
+      bundle.addEventListener('pointerup', event => {
+        const diff = event.clientX - startX;
+        if (Math.abs(diff) > 50) { diff < 0 ? next() : prev(); restart(); }
+      });
+      bundle.addEventListener('mouseenter', () => { if (timer) clearInterval(timer); });
+      bundle.addEventListener('mouseleave', restart);
+      show(0); restart();
+    }
+    function initDetailMotion() {
+      if (!document.querySelector('.scroll-progress')) {
+        const progress = document.createElement('div');
+        progress.className = 'scroll-progress';
+        document.body.appendChild(progress);
+      }
+      const progressBar = document.querySelector('.scroll-progress');
+      const updateProgress = () => {
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+        const percent = maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
+        if (progressBar) progressBar.style.width = `${percent}%`;
+      };
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+
+      document.querySelectorAll('.project-detail-page,.footer').forEach(section => {
+        if (section.querySelector('.motion-particle')) return;
+        for (let i = 0; i < 4; i += 1) {
+          const particle = document.createElement('span');
+          particle.className = 'motion-particle';
+          section.appendChild(particle);
+        }
+      });
+    }
+
+    function showDetailReveals() {
+      const items = Array.from(document.querySelectorAll('.reveal:not(.show)'));
+      items.forEach((item, index) => {
+        item.style.setProperty('--reveal-delay', `${Math.min(index * 90, 500)}ms`);
+        setTimeout(() => item.classList.add('show'), 60 + index * 70);
+      });
+    }
+
+    async function loadProject() {
+      const siteContent = await loadSiteContentForDetail();
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) {
+        root.innerHTML = '<p class="project-empty">No project ID found.</p><a href="index.html#projects" class="btn btn-primary">Back to Projects</a>';
+        return;
+      }
+      let project = null;
+      if (window.HossainSupabase && window.HossainSupabase.hasConfig()) {
+        try { project = await window.HossainSupabase.fetchProject(id); } catch (error) { console.warn(error); }
+      }
+      if (!project && Array.isArray(window.PROJECTS)) project = window.PROJECTS.find(item => item.id === id);
+      if (!project) {
+        root.innerHTML = '<p class="project-empty">Project not found.</p><a href="index.html#projects" class="btn btn-primary">Back to Projects</a>';
+        return;
+      }
+      document.title = `${project.title} | ${((siteContent.general || {}).brandName || 'Hossain Ahmad')}`;
+      root.innerHTML = `
+        <span class="eyebrow dark reveal">${escapeHtml(project.tag || 'Project')}</span>
+        <h1 class="reveal">${escapeHtml(project.title)}</h1>
+        <p class="project-detail-subtitle reveal">${escapeHtml(project.description || '')}</p>
+        ${galleryHtml(project)}
+        <div class="project-detail-grid reveal">
+          <div class="project-detail-content">
+            <h2>Project Overview</h2>
+            <p>${escapeHtml(project.overview || project.description || 'Project overview will be updated soon.')}</p>
+            <h2>My Responsibilities</h2>
+            ${listHtml(project.responsibilities)}
+            <h2>Deliverables</h2>
+            ${listHtml(project.deliverables)}
+            <h2>Tools & Skills Used</h2>
+            ${listHtml(project.tools)}
+          </div>
+          <aside class="project-info-card">
+            <h3>Project Information</h3>
+            <p><strong>Project:</strong> ${escapeHtml(project.title)}</p>
+            <p><strong>Year:</strong> ${escapeHtml(project.year || '')}</p>
+            <p><strong>Schedule Date:</strong> ${escapeHtml(project.scheduleDate || '')}</p>
+            <p><strong>Location:</strong> ${escapeHtml(project.location || '')}</p>
+            <p><strong>Client:</strong> ${escapeHtml(project.client || '')}</p>
+            <p><strong>Role:</strong> ${escapeHtml(project.role || '')}</p>
+            <p><strong>Category:</strong> ${escapeHtml(project.tag || '')}</p>
+          </aside>
+        </div>
+        <div class="project-navigation">
+          <a href="index.html#projects" class="btn btn-primary">Back to Projects</a>
+          <a href="index.html#contact" class="btn btn-light">Discuss Similar Project</a>
+        </div>
+      `;
+      initDetailMotion();
+      initProjectGallery();
+      showDetailReveals();
+    }
+    initDetailMotion();
+    loadProject();
+  
