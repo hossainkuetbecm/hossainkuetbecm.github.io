@@ -699,3 +699,12 @@ body::before {
   }
   .motion-particle { opacity: .35; }
 }
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #f6a623;
+  padding: 6px;
+  box-shadow: 0 10px 25px rgba(246, 166, 35, 0.32);
+}
