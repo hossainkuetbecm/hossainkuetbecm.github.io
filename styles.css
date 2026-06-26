@@ -699,20 +699,17 @@ body::before {
   }
   .motion-particle { opacity: .35; }
 }
-.brand-logo-wide {
-  width: 230px;
-  height: auto;
-  max-height: 52px;
+.brand-logo-small {
+  width: 48px;
+  height: 48px;
   object-fit: contain;
-  display: block;
-  background: transparent !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
+  border-radius: 14px;
+  background: transparent;
+  box-shadow: none;
 }
 
-.navbar .brand {
-  display: flex;
-  align-items: center;
-  min-width: 240px;
+.brand-text {
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.12rem;
 }
