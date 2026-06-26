@@ -708,3 +708,26 @@ body::before {
   padding: 6px;
   box-shadow: 0 10px 25px rgba(246, 166, 35, 0.32);
 }
+.brand-logo-wide {
+  width: 245px;
+  height: auto;
+  max-height: 58px;
+  object-fit: contain;
+  display: block;
+}
+
+.navbar .brand {
+  min-width: 250px;
+  gap: 0;
+}
+
+@media (max-width: 760px) {
+  .brand-logo-wide {
+    width: 190px;
+    max-height: 48px;
+  }
+
+  .navbar .brand {
+    min-width: auto;
+  }
+}
