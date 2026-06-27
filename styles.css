@@ -505,3 +505,13 @@ p,
   font-family: var(--font-body) !important;
   font-weight: 700;
 }
+.project-see-more {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.project-see-more .btn {
+  min-width: 190px;
+}
