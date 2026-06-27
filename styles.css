@@ -391,3 +391,19 @@ a{text-decoration:none;color:inherit}img{max-width:100%;display:block}.container
     width: min(230px, calc(100vw - 24px)) !important;
   }
 }
+/* Trust strip yellow bar bigger */
+.trust-strip {
+  padding: 24px 0 !important;
+}
+
+.strip-grid {
+  min-height: 95px !important;
+  gap: 20px !important;
+}
+
+.strip-grid span {
+  padding: 16px 34px !important;
+  min-width: 180px !important;
+  font-size: 1rem !important;
+  border-radius: 999px !important;
+}
