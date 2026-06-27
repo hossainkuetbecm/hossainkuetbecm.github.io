@@ -269,39 +269,69 @@ function renderFilterButtons() {
     ...categories.map(category => `<button data-filter="${escapeHtml(category.id)}">${escapeHtml(category.label)}</button>`)
   ].join('');
 }
-
+let activeProjectFilter = 'all';
+let projectDisplayLimit = 6;
 function renderProjects(filter = 'all') {
   const projectGrid = $('#projectGrid');
   if (!projectGrid) return;
-  const visibleProjects = sortProjectsNewestFirst(projects.filter(project => filter === 'all' || project.category === filter));
+
+  activeProjectFilter = filter;
+
+  const visibleProjects = sortProjectsNewestFirst(
+    projects.filter(project => filter === 'all' || project.category === filter)
+  );
 
   if (!visibleProjects.length) {
     projectGrid.innerHTML = `<p class="project-empty">No projects found for this category.</p>`;
     return;
   }
 
-  projectGrid.innerHTML = visibleProjects.map(project => {
+  const projectsToShow = visibleProjects.slice(0, projectDisplayLimit);
+
+  projectGrid.innerHTML = projectsToShow.map(project => {
     const link = projectLink(project);
     const categoryLabel = getCategoryLabel(project.category);
+
     return `
       <article class="project-card reveal" data-category="${escapeHtml(project.category)}" onclick="window.location.href='${escapeHtml(link)}'">
-       <img 
-  src="${escapeHtml(project.image || 'assets/project-structural.png')}" 
-  alt="${escapeHtml(project.imageAlt || project.title)}" 
-  loading="lazy"
->
+        <img 
+          src="${escapeHtml(project.image || 'assets/project-structural.png')}" 
+          alt="${escapeHtml(project.imageAlt || project.title)}" 
+          loading="lazy"
+        >
         <div class="project-body">
           <span class="project-tag">${escapeHtml(categoryLabel)}</span>
           <h3>${escapeHtml(project.title)}</h3>
           <p>${escapeHtml(project.description)}</p>
-          <div class="project-meta"><span>${escapeHtml(project.year)}</span><span>${escapeHtml(project.tag || categoryLabel)}</span></div>
+          <div class="project-meta">
+            <span>${escapeHtml(project.year)}</span>
+            <span>${escapeHtml(project.tag || categoryLabel)}</span>
+          </div>
         </div>
       </article>
     `;
   }).join('');
+
+  if (visibleProjects.length > projectDisplayLimit) {
+    projectGrid.innerHTML += `
+      <div class="project-see-more reveal">
+        <button type="button" id="seeMoreProjects" class="btn btn-primary">
+          See More Projects
+        </button>
+      </div>
+    `;
+
+    const seeMoreBtn = $('#seeMoreProjects');
+    if (seeMoreBtn) {
+      seeMoreBtn.addEventListener('click', () => {
+        projectDisplayLimit += 6;
+        renderProjects(activeProjectFilter);
+      });
+    }
+  }
+
   showRevealElements();
 }
-
 let revealObserver = null;
 function showRevealElements() {
   const revealItems = $all('.reveal:not(.show)');
@@ -503,6 +533,7 @@ if (menuToggle && navLinks) {
       if(!button) return;
       $all('button', filterControls).forEach(btn => btn.classList.remove('active'));
       button.classList.add('active');
+      projectDisplayLimit = 6;
       renderProjects(button.dataset.filter || 'all');
     });
   }
