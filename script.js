@@ -403,35 +403,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (year) year.textContent = new Date().getFullYear();
 
   const menuToggle = $('#menuToggle');
-  const navLinks = $('#navLinks');
-  if (menuToggle && navLinks) {
+const navLinks = $('#navLinks');
 
-  menuToggle.addEventListener('click', () => {
+if (menuToggle && navLinks) {
+  const closeMenu = () => {
+    navLinks.classList.remove('open');
+    menuToggle.classList.remove('active');
+  };
+
+  menuToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
     navLinks.classList.toggle('open');
+    menuToggle.classList.toggle('active');
   });
 
-  // Close on menu item click
   $all('a', navLinks).forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-    });
+    link.addEventListener('click', closeMenu);
   });
 
-  // Close on page scroll
-  window.addEventListener('scroll', () => {
-    if (navLinks.classList.contains('open')) {
-      navLinks.classList.remove('open');
-    }
-  }, { passive: true });
+  window.addEventListener('scroll', closeMenu, { passive: true });
 
-  // Close when user taps outside the menu
   document.addEventListener('click', (e) => {
-    if (
-      navLinks.classList.contains('open') &&
-      !navLinks.contains(e.target) &&
-      !menuToggle.contains(e.target)
-    ) {
-      navLinks.classList.remove('open');
+    if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+      closeMenu();
     }
   });
 }
