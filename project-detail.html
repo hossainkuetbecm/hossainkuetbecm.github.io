@@ -139,8 +139,12 @@
         slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
         thumbs.forEach((thumb, i) => thumb.classList.toggle('active', i === current));
         if (counter) counter.textContent = `${current + 1} / ${slides.length}`;
-        if (thumbs[current]) thumbs[current].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      };
+        if (thumbs[current]) {
+  const thumbTrack = thumbs[current].parentElement;
+  if (thumbTrack) {
+    thumbTrack.scrollLeft = thumbs[current].offsetLeft - thumbTrack.clientWidth / 2 + thumbs[current].clientWidth / 2;
+  }
+}
       const next = () => show(current + 1);
       const prev = () => show(current - 1);
       const restart = () => { if (timer) clearInterval(timer); if (slides.length > 1) timer = setInterval(next, 4500); };
