@@ -405,9 +405,36 @@ document.addEventListener('DOMContentLoaded', async () => {
   const menuToggle = $('#menuToggle');
   const navLinks = $('#navLinks');
   if (menuToggle && navLinks) {
-    menuToggle.addEventListener('click', () => navLinks.classList.toggle('open'));
-    $all('a', navLinks).forEach(link => link.addEventListener('click', () => navLinks.classList.remove('open')));
-  }
+
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close on menu item click
+  $all('a', navLinks).forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+    });
+  });
+
+  // Close on page scroll
+  window.addEventListener('scroll', () => {
+    if (navLinks.classList.contains('open')) {
+      navLinks.classList.remove('open');
+    }
+  }, { passive: true });
+
+  // Close when user taps outside the menu
+  document.addEventListener('click', (e) => {
+    if (
+      navLinks.classList.contains('open') &&
+      !navLinks.contains(e.target) &&
+      !menuToggle.contains(e.target)
+    ) {
+      navLinks.classList.remove('open');
+    }
+  });
+}
 
   await loadSiteContent();
   renderSiteContent();
