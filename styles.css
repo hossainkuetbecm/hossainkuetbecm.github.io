@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Sora:wght@500;600;700;800&display=swap');
 :root{
   --navy:#071d2b;
   --navy-2:#0b2b40;
@@ -14,7 +15,9 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:Arial,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);background:#fff;line-height:1.65;overflow-x:hidden}
+body {
+  font-family: var(--font-body);
+}
 a{text-decoration:none;color:inherit}img{max-width:100%;display:block}.container{width:min(1180px,92%);margin:auto}.section{padding:105px 0}.section-heading{text-align:center;max-width:720px;margin:0 auto 52px}.section-heading h2,.about-content h2,.portfolio-header h2,.resume-card h2,.faq-grid h2,.contact-info h2{font-size:clamp(2rem,4vw,3.2rem);line-height:1.12;color:var(--navy);margin:8px 0 16px}.section-heading p{color:var(--muted)}.eyebrow{display:inline-flex;align-items:center;gap:8px;text-transform:uppercase;font-weight:800;letter-spacing:.12em;font-size:.78rem;color:var(--orange)}.eyebrow:before{content:"";width:34px;height:3px;background:currentColor;border-radius:10px}.eyebrow.dark{color:var(--orange-dark)}
 .preloader{position:fixed;inset:0;background:var(--navy);display:grid;place-items:center;z-index:9999;transition:.45s}.preloader.hide{opacity:0;visibility:hidden}.loader-mark{width:82px;height:82px;border-radius:24px;background:var(--orange);display:grid;place-items:center;font-size:1.6rem;font-weight:900;color:var(--navy);animation:pulse 1.1s infinite alternate}@keyframes pulse{from{transform:scale(.93);opacity:.75}to{transform:scale(1.05);opacity:1}}
 .site-header{position:fixed;top:0;left:0;width:100%;z-index:999;background:rgba(7,29,43,.92);backdrop-filter:blur(14px);transition:.25s}.site-header.scrolled{box-shadow:0 12px 35px rgba(0,0,0,.2)}.topbar{background:#03121c;color:#c9d4df;font-size:.88rem}.topbar-inner{height:42px;display:flex;align-items:center;justify-content:space-between;gap:20px}.navbar{height:82px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:12px;color:#fff;font-weight:900}.brand-mark{width:48px;height:48px;border-radius:14px;background:var(--orange);color:var(--navy);display:grid;place-items:center;box-shadow:0 10px 25px rgba(246,166,35,.32)}.brand-text{font-size:1.12rem}.nav-links{display:flex;align-items:center;gap:28px;list-style:none;color:#dfe8ef;font-weight:700}.nav-links a{transition:.2s}.nav-links a:hover,.nav-links a.active{color:var(--orange)}.nav-cta{padding:13px 22px;background:var(--orange);color:var(--navy);border-radius:999px;font-weight:900}.menu-toggle{display:none;background:transparent;border:0;width:44px;cursor:pointer}.menu-toggle span{display:block;height:3px;background:#fff;margin:7px 0;border-radius:10px}
@@ -424,4 +427,81 @@ a{text-decoration:none;color:inherit}img{max-width:100%;display:block}.container
     padding: 14px 12px !important;
     font-size: 0.9rem !important;
   }
+}
+/* Premium Font System */
+:root {
+  --font-body: 'Manrope', Arial, sans-serif;
+  --font-heading: 'Sora', Arial, sans-serif;
+}
+
+body,
+input,
+select,
+textarea,
+button {
+  font-family: var(--font-body) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand-text,
+.section-heading h2,
+.about-content h2,
+.portfolio-header h2,
+.resume-card h2,
+.faq-grid h2,
+.contact-info h2 {
+  font-family: var(--font-heading) !important;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.hero-content h1 {
+  font-family: var(--font-heading) !important;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+
+.nav-links,
+.btn,
+.nav-cta,
+.admin-link,
+.admin-icon-link,
+.project-tag,
+.project-meta,
+.eyebrow,
+.strip-grid span {
+  font-family: var(--font-body) !important;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+p,
+.project-body p,
+.service-card p,
+.timeline-item p,
+.project-detail-content p,
+.project-detail-content li,
+.contact-info p,
+.footer p {
+  font-family: var(--font-body) !important;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.hero-metrics strong,
+.experience-badge strong {
+  font-family: var(--font-heading) !important;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.hero-metrics span,
+.experience-badge span {
+  font-family: var(--font-body) !important;
+  font-weight: 700;
 }
