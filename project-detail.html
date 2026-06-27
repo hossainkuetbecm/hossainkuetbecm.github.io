@@ -145,6 +145,7 @@
     thumbTrack.scrollLeft = thumbs[current].offsetLeft - thumbTrack.clientWidth / 2 + thumbs[current].clientWidth / 2;
   }
 }
+        };
       const next = () => show(current + 1);
       const prev = () => show(current - 1);
       const restart = () => { if (timer) clearInterval(timer); if (slides.length > 1) timer = setInterval(next, 4500); };
