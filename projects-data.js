@@ -25,6 +25,7 @@ window.PROJECTS = [
     "category": "structural",
     "year": "October 2022",
     "image": "assets/project-structural.png",
+    "imageAlt": "SB+G+7.5 storied residential building foundation layout, column layout, beam layout and RCC structural drawing by Hossain Ahmad",
     "galleryImages": [
       "assets/project-structural.png"
     ],
@@ -80,6 +81,7 @@ window.PROJECTS = [
     "category": "structural",
     "year": "September 2022",
     "image": "assets/project-structural.png",
+    "imageAlt": "SB+10 storied mixed-use building RCC structural design, foundation layout and AutoCAD drawing support by Hossain Ahmad",
     "galleryImages": [
       "assets/project-structural.png"
     ],
@@ -162,6 +164,7 @@ window.PROJECTS = [
     "category": "structural",
     "year": "February 2022",
     "image": "assets/project-autocad.png",
+    "imageAlt": "SB+09 storied residential mixed-use building structural drawing, column beam layout and documentation support by Hossain Ahmad",
     "galleryImages": [
       "assets/project-autocad.png"
     ],
