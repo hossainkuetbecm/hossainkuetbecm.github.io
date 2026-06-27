@@ -285,7 +285,11 @@ function renderProjects(filter = 'all') {
     const categoryLabel = getCategoryLabel(project.category);
     return `
       <article class="project-card reveal" data-category="${escapeHtml(project.category)}" onclick="window.location.href='${escapeHtml(link)}'">
-        <img src="${escapeHtml(project.image || 'assets/project-structural.png')}" alt="${escapeHtml(project.title)}" loading="lazy">
+       <img 
+  src="${escapeHtml(project.image || 'assets/project-structural.png')}" 
+  alt="${escapeHtml(project.imageAlt || project.title)}" 
+  loading="lazy"
+>
         <div class="project-body">
           <span class="project-tag">${escapeHtml(categoryLabel)}</span>
           <h3>${escapeHtml(project.title)}</h3>
