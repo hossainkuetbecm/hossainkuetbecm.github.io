@@ -407,3 +407,21 @@ a{text-decoration:none;color:inherit}img{max-width:100%;display:block}.container
   font-size: 1rem !important;
   border-radius: 999px !important;
 }
+@media (max-width: 760px) {
+  .trust-strip {
+    padding: 22px 0 !important;
+  }
+
+  .strip-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+    min-height: auto !important;
+  }
+
+  .strip-grid span {
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 14px 12px !important;
+    font-size: 0.9rem !important;
+  }
+}
