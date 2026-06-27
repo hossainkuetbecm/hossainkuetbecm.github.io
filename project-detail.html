@@ -107,7 +107,7 @@
       const images = projectImages(project);
       const slides = images.map((url, index) => `
         <div class="project-gallery-slide ${index === 0 ? 'active' : ''}" data-gallery-slide="${index}">
-          <img src="${escapeHtml(url)}" alt="${escapeHtml(project.title)} image ${index + 1}" onerror="this.src='assets/project-structural.png'">
+         <img src="${escapeHtml(url)}" alt="${escapeHtml(project.imageAlt || project.title)} gallery image ${index + 1}" onerror="this.src='assets/project-structural.png'">
         </div>`).join('');
       const thumbs = images.map((url, index) => `
         <button class="project-gallery-thumb ${index === 0 ? 'active' : ''}" type="button" data-gallery-thumb="${index}" aria-label="Show image ${index + 1}">
