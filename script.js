@@ -371,20 +371,63 @@ function initPremiumMotion() {
 }
 
 function animateCounters() {
-  $all('[data-count]').forEach(counter => {
+  const metricsSection = document.querySelector('.hero-metrics');
+  const counters = $all('.hero-metrics [data-count]');
+
+  if (!metricsSection || !counters.length) return;
+
+  counters.forEach(counter => {
     const target = parseInt(counter.dataset.count, 10) || 0;
-    const suffix = counter.dataset.suffix !== undefined ? counter.dataset.suffix : (target === 10 ? '+' : '');
-    const duration = 1200;
-    const startTime = performance.now();
-    function updateCounter(now) {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const value = Math.floor(progress * target);
-      counter.textContent = value + suffix;
-      if (progress < 1) requestAnimationFrame(updateCounter);
-      else counter.textContent = target + suffix;
-    }
-    requestAnimationFrame(updateCounter);
+    const suffix = counter.dataset.suffix !== undefined ? counter.dataset.suffix : '+';
+
+    counter.dataset.finalTarget = target;
+    counter.dataset.finalSuffix = suffix;
+    counter.textContent = '0' + suffix;
   });
+
+  let hasCounted = false;
+
+  function startCounter(counter, duration = 5200) {
+    const target = parseInt(counter.dataset.finalTarget, 10) || 0;
+    const suffix = counter.dataset.finalSuffix || '';
+    let startTime = null;
+
+    function updateCounter(now) {
+      if (!startTime) startTime = now;
+
+      const progress = Math.min((now - startTime) / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      const value = Math.floor(easedProgress * target);
+
+      counter.textContent = value + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(updateCounter);
+      } else {
+        counter.textContent = target + suffix;
+      }
+    }
+
+    requestAnimationFrame(updateCounter);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !hasCounted) {
+        hasCounted = true;
+
+        counters.forEach(counter => {
+          startCounter(counter, 5200);
+        });
+
+        observer.unobserve(metricsSection);
+      }
+    });
+  }, {
+    threshold: 0.65
+  });
+
+  observer.observe(metricsSection);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
