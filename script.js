@@ -459,7 +459,57 @@ function animateCounters() {
 
   observer.observe(metricsSection);
 }
+function animateExperienceBadgeCounter() {
+  const badge = document.querySelector('.experience-badge strong');
+  if (!badge) return;
 
+  const originalText = badge.textContent.trim(); // example: 4.9+
+  const target = parseFloat(originalText.replace(/[^0-9.]/g, ''));
+  const suffix = originalText.replace(/[0-9.]/g, '');
+
+  if (isNaN(target)) return;
+
+  const decimalPlaces = originalText.includes('.') ? 1 : 0;
+  badge.textContent = decimalPlaces ? `0.0${suffix}` : `0${suffix}`;
+
+  let hasCounted = false;
+
+  function startCount(duration = 4200) {
+    let startTime = null;
+
+    function update(now) {
+      if (!startTime) startTime = now;
+
+      const progress = Math.min((now - startTime) / duration, 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      const current = target * easedProgress;
+
+      badge.textContent = current.toFixed(decimalPlaces) + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        badge.textContent = target.toFixed(decimalPlaces) + suffix;
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !hasCounted) {
+        hasCounted = true;
+        startCount(4200); // bigger value = slower count
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.55
+  });
+
+  observer.observe(badge);
+}
 document.addEventListener('DOMContentLoaded', async () => {
   initPremiumMotion();
   const header = $('#siteHeader');
@@ -505,7 +555,7 @@ if (menuToggle && navLinks) {
 
   await loadSiteContent();
   renderSiteContent();
-
+animateExperienceBadgeCounter();
   const slides = $all('.hero-slide');
   let currentSlide = 0;
   function showSlide(index){
