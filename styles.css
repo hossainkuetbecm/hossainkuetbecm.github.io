@@ -515,3 +515,31 @@ p,
 .project-see-more .btn {
   min-width: 190px;
 }
+/* Project category mobile 2-column grid fix */
+@media (max-width: 760px) {
+  .portfolio-header {
+    display: block !important;
+    text-align: left !important;
+  }
+
+  .filter-controls {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(120px, 1fr)) !important;
+    gap: 12px !important;
+    margin-top: 28px !important;
+  }
+
+  .filter-controls button {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 13px 18px !important;
+    font-size: 15px !important;
+  }
+
+  .filter-controls button[data-filter="all"] {
+    grid-column: 1 / -1 !important;
+    width: 92px !important;
+    justify-self: center !important;
+  }
+}
