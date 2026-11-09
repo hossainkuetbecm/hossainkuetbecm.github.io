@@ -2,7 +2,7 @@ name: Keep Supabase Alive
 
 on:
   schedule:
-    # প্রতিদিন ২ বার (সকাল ও সন্ধ্যায়) অটোমেটিক ডাটাবেস পিং করবে
+    # প্রতিদিন ২ বার অটোমেটিক আপনার Supabase ডাটাবেসে রিকোয়েস্ট পাঠাবে
     - cron: '0 0,12 * * *'
   workflow_dispatch:
 
@@ -10,8 +10,14 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase Database
+      - name: Ping Supabase Projects Table
         run: |
-          curl -X GET "YOUR_SUPABASE_URL/rest/v1/YOUR_TABLE_NAME?select=*&limit=1" \
-          -H "apikey: YOUR_ANON_KEY" \
-          -H "Authorization: Bearer YOUR_ANON_KEY"
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://tvchgqknvelsjkxlehsw.supabase.co/rest/v1/projects?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2Y2hncWtudmVsc2preGxlaHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MTM3MzMsImV4cCI6MjA5Nzk4OTczM30.985qRoNILPj6DyZsBrlc5c3xQLVP7ahzBovCVUjRNps" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2Y2hncWtudmVsc2preGxlaHN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MTM3MzMsImV4cCI6MjA5Nzk4OTczM30.985qRoNILPj6DyZsBrlc5c3xQLVP7ahzBovCVUjRNps")
+          echo "Response HTTP Status: $status"
+          if [ "$status" -ne 200 ]; then
+            echo "Failed to ping Supabase! Make sure the project is not paused."
+            exit 1
+          fi
